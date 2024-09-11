@@ -6,46 +6,46 @@ import { jobScale } from './../jobs.js';
 import { races, traits } from './../races.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 
-export function pResPage(content, forSearch = false){
-    let mainContent = sideMenu('create',content,null,null, forSearch);
+export function pResPage(content){
+    let mainContent = sideMenu('create',content);
 
     //Plasmids
     let section = infoBoxBuilder(mainContent,{ name: 'plasmids', template: 'p_res', paragraphs: 2, h_level: 2,
         para_data: { 1: [250] },
         data_color: { 1: ['warning'] }
-    }, null, forSearch, "resources");
+    });
     let subSection = createCalcSection(section,'plasmid','gain');
     prestigeCalc(subSection,'plasmid');
     subSection = createCalcSection(section,'plasmid','bonus');
     plasProdCalc(subSection,'plasmid');
     storeBonusCalc(subSection,'plasmid');
-    sideMenu('add',`resources-prestige`,'plasmids',loc('wiki_p_res_plasmids'), forSearch);
+    sideMenu('add',`resources-prestige`,'plasmids',loc('wiki_p_res_plasmids'));
 
     //Anti-Plasmids
     section = infoBoxBuilder(mainContent,{ name: 'antiplasmids', template: 'p_res', paragraphs: 5, h_level: 2,
         para_data: { 4: [loc('arpa_genepool_bleeding_effect_title')] },
         data_link: { 4: ['wiki.html#crispr-prestige-bleeding_effect'] }
-    }, null, forSearch, "resources");
+    });
     subSection = createCalcSection(section,'anti','gain');
     prestigeCalc(subSection,'plasmid','anti');
     subSection = createCalcSection(section,'anti','bonus');
     plasProdCalc(subSection,'anti');
     storeBonusCalc(subSection,'anti');
-    sideMenu('add',`resources-prestige`,'antiplasmids',loc('wiki_p_res_antiplasmids'), forSearch);
+    sideMenu('add',`resources-prestige`,'antiplasmids',loc('wiki_p_res_antiplasmids'));
 
     //Phage
-    section = infoBoxBuilder(mainContent,{ name: 'phage', template: 'p_res', paragraphs: 4, h_level: 2 }, null, forSearch, "resources");
+    section = infoBoxBuilder(mainContent,{ name: 'phage', template: 'p_res', paragraphs: 4, h_level: 2 });
     subSection = createCalcSection(section,'phage','gain');
     prestigeCalc(subSection,'phage');
     subSection = createCalcSection(section,'phage','bonus');
     storeBonusCalc(subSection,'phage');
-    sideMenu('add',`resources-prestige`,'phage',loc('wiki_p_res_phage'), forSearch);
+    sideMenu('add',`resources-prestige`,'phage',loc('wiki_p_res_phage'));
 
     //Dark Energy
-    let dark = infoBoxBuilder(mainContent,{ name: 'dark', template: 'p_res', paragraphs: 1, h_level: 2 }, null, forSearch, "resources");
+    let dark = infoBoxBuilder(mainContent,{ name: 'dark', template: 'p_res', paragraphs: 1, h_level: 2 });
     let dark_extra = $(`<div></div>`);
     let dark_list = $(`<ul class="disc"></ul>`);
-    dark.append?.(dark_extra);
+    dark.append(dark_extra);
     dark_extra.append(dark_list);
     dark_list.append(`<li>${loc('wiki_p_res_dark_standard')}</li>`);
     dark_list.append(`<li>${loc('wiki_p_res_dark_evil')}</li>`);
@@ -58,15 +58,15 @@ export function pResPage(content, forSearch = false){
     prestigeCalc(subSection,'dark','vacuum','vacuum');
     subSection = createCalcSection(dark,'dark','bonus');
     darkBonusCalc(subSection);
-    sideMenu('add',`resources-prestige`,'dark',loc('wiki_p_res_dark'), forSearch);
+    sideMenu('add',`resources-prestige`,'dark',loc('wiki_p_res_dark'));
 
     //Harmony Crystals
-    section = infoBoxBuilder(mainContent,{ name: 'harmony', template: 'p_res', paragraphs: 3, h_level: 2 }, null, forSearch, "resources");
+    section = infoBoxBuilder(mainContent,{ name: 'harmony', template: 'p_res', paragraphs: 3, h_level: 2 });
     subSection = createCalcSection(section,'harmony','gain');
     prestigeCalc(subSection,'harmony');
     subSection = createCalcSection(section,'harmony','bonus');
     harmonyCreepCalc(subSection);
-    sideMenu('add',`resources-prestige`,'harmony',loc('wiki_p_res_harmony'), forSearch);
+    sideMenu('add',`resources-prestige`,'harmony',loc('wiki_p_res_harmony'));
 
     //Blood Stones
     infoBoxBuilder(mainContent,{ name: 'blood', template: 'p_res', paragraphs: 5, h_level: 2,
@@ -81,8 +81,8 @@ export function pResPage(content, forSearch = false){
             4: ['wiki.html#crispr-prestige-blood_sacrifice'],
             5: ['wiki.html#crispr-prestige-blood_remembrance']
         }
-    }, null, forSearch, "resources");
-    sideMenu('add',`resources-prestige`,'blood',loc('wiki_p_res_blood'), forSearch);
+    });
+    sideMenu('add',`resources-prestige`,'blood',loc('wiki_p_res_blood'));
 
     //Artifacts
     section = infoBoxBuilder(mainContent,{ name: 'artifact', template: 'p_res', paragraphs: 3, h_level: 2,
@@ -95,10 +95,10 @@ export function pResPage(content, forSearch = false){
             1: ['wiki.html#resets-prestige-infusion'],
             2: ['wiki.html#blood-prestige']
         }
-    }, null, forSearch, "resources");
+    });
     subSection = createCalcSection(section,'artifact','gain');
     prestigeCalc(subSection,'artifact');
-    sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'), forSearch);
+    sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
 
     //AI Core
     section = infoBoxBuilder(mainContent,{ name: 'ai_core', template: 'p_res', paragraphs: 2, h_level: 2,
@@ -108,12 +108,12 @@ export function pResPage(content, forSearch = false){
         data_link: {
             1: ['wiki.html#resets-prestige-ai'],
         }
-    }, null, forSearch, "resources");
+    });
     subSection = createCalcSection(section,'cores','gain');
     prestigeCalc(subSection,'cores');
     subSection = createCalcSection(section,'cores','bonus');
     coresQuantumCalc(subSection);
-    sideMenu('add',`resources-prestige`,'ai_core',loc('wiki_p_res_ai_core'), forSearch);
+    sideMenu('add',`resources-prestige`,'ai_core',loc('wiki_p_res_ai_core'));
 
     //Servants
     section = infoBoxBuilder(mainContent,{ name: 'servants', template: 'p_res', paragraphs: 5, h_level: 2, break: [3,4,5],
@@ -125,8 +125,8 @@ export function pResPage(content, forSearch = false){
             1: ['wiki.html#resets-prestige-matrix','wiki.html#resets-prestige-retired','wiki.html#resets-prestige-eden'],
             5: ['wiki.html#perks-prestige-overlord'],
         }
-    }, null, forSearch, "resources");
-    sideMenu('add',`resources-prestige`,'servants',loc('wiki_p_res_servants'), forSearch);
+    });
+    sideMenu('add',`resources-prestige`,'servants',loc('wiki_p_res_servants'));
 
     //Skilled Servants
     section = infoBoxBuilder(mainContent,{ name: 'skilled_servants', template: 'p_res', paragraphs: 6, h_level: 2, break: [3,4,5,6],
@@ -138,8 +138,8 @@ export function pResPage(content, forSearch = false){
             1: ['wiki.html#resets-prestige-matrix','wiki.html#resets-prestige-retired'],
             6: ['wiki.html#perks-prestige-pathfinder','wiki.html#perks-prestige-overlord'],
         }
-    }, null, forSearch, "resources");
-    sideMenu('add',`resources-prestige`,'skilled_servants',loc('wiki_p_res_skilled_servants'), forSearch);
+    });
+    sideMenu('add',`resources-prestige`,'skilled_servants',loc('wiki_p_res_skilled_servants'));
 }
 
 const calcVars = {
@@ -154,7 +154,6 @@ const calcVars = {
 }
 
 export function prestigeCalc(info,resource,extraType,resetType){
-    if(!info?.append)return;
     let prestigeType = extraType || resource;
     let prefix = resource + (resetType || "") + (extraType || "");
     let calc = $(`<div class="calc" id="${prefix}Calc"></div>`);
@@ -755,7 +754,6 @@ export function prestigeCalc(info,resource,extraType,resetType){
 }
 
 function plasProdCalc(info,type){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="${type}ProdCalc"></div>`);
     info.append(calc);
     
@@ -919,7 +917,6 @@ function plasProdCalc(info,type){
 }
 
 function storeBonusCalc(info,type){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="${type}StoreCalc"></div>`);
     info.append(calc);
     
@@ -1102,7 +1099,6 @@ function storeBonusCalc(info,type){
 }
 
 function darkBonusCalc(info){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="darkBonusCalc"></div>`);
     info.append(calc);
     
@@ -1314,7 +1310,6 @@ function darkBonusCalc(info){
 }
 
 function harmonyCreepCalc(info){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="harmonyCreepCalc"></div>`);
     info.append(calc);
     
@@ -1401,7 +1396,6 @@ function harmonyCreepCalc(info){
 
 
 function coresQuantumCalc(info){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="coresQuantumCalc"></div>`);
     info.append(calc);
     

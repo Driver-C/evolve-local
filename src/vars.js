@@ -678,6 +678,7 @@ if (convertVersion(global['version']) < 100023){
             delete global.tech['axe']; delete global.tech['reclaimer']; delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             if (global.civic.d_job === 'lumberjack') { global.civic.d_job = 'unemployed'; }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.lumberjack;
@@ -1187,8 +1188,17 @@ if (convertVersion(global['version']) < 103011){
     }
 }
 
-global['version'] = '1.3.12';
-delete global['revision'];
+if (convertVersion(global['version']) < 103014){
+    if (global.race['cataclysm'] && !global.race['start_cataclysm']){
+        global.civic.craftsman.display = true;
+    }
+    if (global.race['lone_survivor'] && ((global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.tauceti['womling_station'] && global.tauceti.womling_station.count > 0))){
+        global.civic.craftsman.display = true;
+    }
+}
+
+global['version'] = '1.3.14';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -1231,7 +1241,9 @@ if (!global['settings']){
         q_merge: 'merge_nearby',
         cLabels: true,
         theme: 'gruvboxDark',
-        locale: ["cs-CZ","de-DE","es-ES","im-PL","it-IT","ko-KR","pl-PL","pt-BR","ru-RU","zh-CN","zh-TW"].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US',
+        locale: [
+            "en-US", "es-ES", "pt-BR", "de-DE", "it-IT", "ru-RU", "cs-CZ", "pl-PL", "zh-TW", "ko-KR", "im-PL"
+        ].indexOf(window.navigator.language) > -1 ? window.navigator.language : 'zh-CN',
         icon: 'star'
     };
 }
@@ -1393,7 +1405,9 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 if (!global.settings['locale']){
-    global.settings['locale'] = ["cs-CZ","es-ES","im-PL","ko-KR","pt-BR","ru-RU","zh-CN","zh-TW",].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US';
+    global.settings['locale'] = [
+        "en-US", "es-ES", "pt-BR", "de-DE", "it-IT", "ru-RU", "cs-CZ", "pl-PL", "zh-TW", "ko-KR", "im-PL"
+    ].indexOf(window.navigator.language) > -1 ? window.navigator.language : 'zh-CN';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
@@ -1484,6 +1498,15 @@ export function setupStats(){
     }
     if (!global.stats.hasOwnProperty('banana')){
         global.stats['banana'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
+    if (!global.stats.hasOwnProperty('endless_hunger')){
+        global.stats['endless_hunger'] = {
             b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
@@ -1683,6 +1706,10 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
 
 if (!global.settings['queuestyle']){
     global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
+if (!global.settings['q_resize']){
+    global.settings.q_resize = 'auto';
 }
 
 $('html').addClass(global.settings.theme);

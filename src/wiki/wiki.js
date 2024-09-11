@@ -14,7 +14,7 @@ import { prestigePage } from './prestige.js';
 import { eventsPage } from './events.js';
 import { arpaPage } from './arpa.js';
 import { changeLog } from './change.js';
-import {add2virtualWikiContent, add2virtualWikiTitle, addSub2Main, initSearch} from "./search";
+import { cancelSearchIndexing, search } from './search.js';
 
 $('body').empty();
 initPage();
@@ -27,175 +27,6 @@ function initPage(){
 
     let menu = $(`<div id="menu" class="mainMenu"></div>`);
     wiki.append(menu);
-
-    var global_data = save.getItem('evolved') || false;
-    if (global_data){
-        setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
-    }
-
-    let content = $(`<div id="content" class="mainContent"></div>`);
-    wiki.append(content);
-
-    if (window.location.hash){
-        let hash = window.location.hash.substring(1).split('-');
-        if (hash.length > 1){
-            hash.length > 2 ? menuDispatch(hash[1],hash[0],hash[2]) : menuDispatch(hash[1],hash[0]);
-        }
-        else {
-            menuDispatch(hash[0]);
-        }
-    }
-    else {
-        mainPage();
-        initMenu(menu);
-    }
-    initSearch(wiki);
-}
-
-export function menuDispatch(main,sub,frag){
-    $(`#content`).removeClass('flex');
-
-    tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });
-
-    switch (main){
-        case 'intro':
-            mainPage();
-            window.location.hash = `#${main}`;
-            break;
-
-        case 'faq':
-            faqPage();
-            if(frag){
-                setWindowHash(main,sub,frag);
-            }else {
-                window.location.hash = `#${main}`;
-            }
-            break;
-
-        case 'gameplay':
-            gamePlayPage(sub);
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'prestige':
-            prestigePage(sub);
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'events':
-            eventsPage(sub);
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'species':
-            switch (sub){
-                case 'planets':
-                    planetsPage();
-                    break;
-                default:
-                    speciesPage(sub);
-                    break;
-            }
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'structures':
-            renderStructurePage(sub,'standard');
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'tech':
-            renderTechPage(sub,'standard');
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'tp_structures':
-            renderStructurePage(sub,'truepath');
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'tp_tech':
-            renderTechPage(sub,'truepath');
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'arpa':
-            arpaPage(sub);
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'achievements':
-            switch (sub){
-                case 'tracker':
-                    //loadTracker();
-                    break;
-                default:
-                    renderAchievePage(sub);
-                    break;
-                }
-                setWindowHash(main,sub,frag);
-            break;
-
-        case 'changelog':
-            changeLog();
-            if(frag){
-                setWindowHash(main,sub,frag);
-            }else {
-                window.location.hash = `#${main}`;
-            }
-            break;
-    }
-    initMenu($("#menu"));
-}
-
-function setWindowHash(main,sub,frag){
-    if (typeof frag === 'undefined'){
-        window.location.hash = `#${sub}-${main}`;
-    }
-    else {
-        window.location.hash = `#${sub}-${main}-${frag}`;
-        setTimeout(function(){
-            document.getElementById(frag).scrollIntoView({
-                block: 'start',
-                behavior: 'smooth'
-            });
-        }, 125);
-        
-    }
-}
-
-function buiildMenu(items,set,parent){
-    let hash = window.location.hash ? window.location.hash.substring(1).split('-') : false;
-
-    let menu = ``;
-    for (let i=0; i<items.length; i++){
-
-        if (items[i].hasOwnProperty('submenu')){
-            let active = (!hash && set && i === 0) || (hash && hash.length > 1 && hash[1] === items[i].key) ? ` :active="true" expanded` : '';
-            menu = menu + `<b-menu-item${active}><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
-            menu = menu + buiildMenu(items[i].submenu,false,items[i].key);
-            menu = menu + `</b-menu-item>`;
-        }
-        else {
-            let active = (!hash && set && i === 0) || (hash && hash[0] === items[i].key) ? ` :active="true"` : '';
-            let args = parent ? `'${parent}','${items[i].key}'` : `'${items[i].key}',false`;
-            menu = menu + `<b-menu-item${active} label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage(${args})"></b-menu-item>`;
-            let sub = items[i].key;
-            if(parent){
-                if(parent.endsWith("tech") && (sub === "interstellar" || sub === "intergalactic" || sub === "tauceti")){
-                    sub += "_tech";
-                }
-                if(parent.startsWith("tp_")){
-                    sub = "tp_" + sub;
-                }
-            }
-            addSub2Main(parent ? parent : items[i].key, sub);
-        }
-    }
-    return menu;
-}
-
-function initMenu(parrent) {
 
     let menuItems = [
         {
@@ -216,7 +47,7 @@ function initMenu(parrent) {
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
-                { key: 'hell' }
+                { key: 'hell' }                
             ]
         },
         {
@@ -235,7 +66,7 @@ function initMenu(parrent) {
                 { key: 'major' },
                 { key: 'minor' },
                 { key: 'progress' },
-                { key: 'special' }
+                { key: 'special' }              
             ]
         },
         {
@@ -313,13 +144,17 @@ function initMenu(parrent) {
         },
         {
             key: 'changelog',
+        },
+        {
+            key: 'search',
         }
     ];
-    parrent.empty();
+
     let wikiMenu = `<template><b-menu class="sticky has-text-caution"><b-menu-list label="${loc('wiki_menu_evolve')}">`;
     wikiMenu = wikiMenu + buiildMenu(menuItems,true,false);
     wikiMenu = wikiMenu + `</b-menu-list></b-menu></template>`;
-    parrent.append(wikiMenu);
+    menu.append(wikiMenu);
+
     var menuData = {};
     vBind({
         el: `#menu`,
@@ -330,20 +165,172 @@ function initMenu(parrent) {
             }
         }
     });
+
+    let content = $(`<div id="content" class="mainContent"></div>`);
+    wiki.append(content);
+
+    if (window.location.hash){
+        let hash = window.location.hash.substring(1).split('-');
+        if (hash.length > 1){
+            hash.length > 2 ? menuDispatch(hash[1],hash[0],hash[2]) : menuDispatch(hash[1],hash[0]);
+        }
+        else {
+            menuDispatch(hash[0]);
+        }
+    }
+    else {
+        mainPage();
+    }
 }
 
-export function mainPage(forSearch = false){
-    if(forSearch){
-        add2virtualWikiTitle("intro", loc("wiki_menu_intro"));
-        add2virtualWikiContent("intro", loc(`wiki_main_author`,['Demagorddon']));
-        add2virtualWikiContent("intro", loc(`wiki_main_spoiler`));
-        add2virtualWikiContent("intro", loc(`wiki_main_blurb`));
-        add2virtualWikiContent("intro", loc(`wiki_main_contribution`,[['Beorseder','Rodrigodd','Volch'].join(', ').replace(/, ([^,]*)$/, `, & $1`)]));
-        add2virtualWikiContent("intro", loc(`wiki_resources`));
-        add2virtualWikiContent("intro", `${loc(`wiki_resources_begin_guide`)} ${loc(`wiki_resources_by`,['GreyCat'])}`);
-        add2virtualWikiContent("intro", `${loc(`wiki_resources_tracker`)} ${loc(`wiki_resources_by`,['Karsen777'])}`);
-        return;
+async function menuDispatch(main,sub,frag){
+    if(window.location.hash === "#search" && main !== "search"){
+        const until = (condition) => {
+            const poll = resolve => condition() ? resolve() : setTimeout(_ => poll(resolve), 16);
+            return new Promise(poll);
+        }
+        cancelSearchIndexing();
+        await until(_ => $(".temp-indexer").length === 0);
     }
+    
+    $(`#content`).removeClass('flex');
+
+    var global_data = save.getItem('evolved') || false;
+    if (global_data){
+        setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
+    }
+
+    tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });
+
+    switch (main){
+        case 'intro':
+            mainPage();
+            window.location.hash = `#${main}`;
+            break;
+
+        case 'faq':
+            faqPage();
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'gameplay':
+            gamePlayPage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'prestige':
+            prestigePage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'events':
+            eventsPage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'species':
+            switch (sub){
+                case 'planets':
+                    planetsPage();
+                    break;
+                default:
+                    speciesPage(sub);
+                    break;
+            }
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'structures':
+            renderStructurePage(sub,'standard');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tech':
+            renderTechPage(sub,'standard');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_structures':
+            renderStructurePage(sub,'truepath');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_tech':
+            renderTechPage(sub,'truepath');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'arpa':
+            arpaPage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'achievements':
+            switch (sub){
+                case 'tracker':
+                    //loadTracker();
+                    break;
+                default:
+                    renderAchievePage(sub);
+                    break;
+                }
+                setWindowHash(main,sub,frag);
+            break;
+
+        case 'changelog':
+            changeLog();
+            setWindowHash(main, sub, frag);
+            break;
+        
+        case 'search':
+            search();
+            window.location.hash = `#${main}`;
+            break;
+    }
+}
+
+function setWindowHash(main,sub,frag){
+    if (typeof frag === 'undefined'){
+        if(sub){
+            window.location.hash = `#${sub}-${main}`;
+        } else {
+            window.location.hash = `#${main}`;
+        }
+    }
+    else {
+        window.location.hash = `#${sub}-${main}-${frag}`;
+        setTimeout(function(){
+            document.getElementById(frag).scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
+        }, 125);
+        
+    }
+}
+
+function buiildMenu(items,set,parent){
+    let hash = window.location.hash ? window.location.hash.substring(1).split('-') : false;
+
+    let menu = ``;
+    for (let i=0; i<items.length; i++){
+
+        if (items[i].hasOwnProperty('submenu')){
+            let active = (!hash && set && i === 0) || (hash && hash.length > 1 && hash[1] === items[i].key) ? ` :active="true" expanded` : '';
+            menu = menu + `<b-menu-item${active}><template slot="label" slot-scope="props">${loc(`wiki_menu_${items[i].key}`)}</template>`;
+            menu = menu + buiildMenu(items[i].submenu,false,items[i].key);
+            menu = menu + `</b-menu-item>`;
+        }
+        else {
+            let active = (!hash && set && i === 0) || (hash && hash[0] === items[i].key) ? ` :active="true"` : '';
+            let args = parent ? `'${parent}','${items[i].key}'` : `'${items[i].key}',false`;
+            menu = menu + `<b-menu-item${active} label="${loc(`wiki_menu_${items[i].key}`)}" @click="loadPage(${args})"></b-menu-item>`
+        }
+    }
+    return menu;
+}
+
+function mainPage(){
     let content = $(`#content`);
     clearElement(content);
 

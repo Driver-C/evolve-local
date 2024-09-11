@@ -1,345 +1,247 @@
-import { gamePlayPage } from "./gameplay";
-import { loc } from "../locale";
-import { mainPage, menuDispatch} from "./wiki";
-import { faqPage } from "./faq";
-import { changeList } from "./change";
-import { prestigePage } from "./prestige";
-import { eventsPage } from "./events";
-import { speciesPage } from "./species";
-import { renderStructurePage } from "./structures";
-import { renderTechPage } from "./tech";
-import { arpaPage } from "./arpa";
-import { renderAchievePage } from "./achieve";
+import { loc } from './../locale.js';
+import { clearElement } from './../functions.js';
+import { faqPage } from './faq.js';
+import { basicsPage } from './basics.js';
+import { mechanicsPage } from './mechanics.js';
+import { govPage } from './government.js';
+import { governPage } from './governor.js';
+import { combatPage } from './combat.js';
+import { challengesPage } from './challenges.js';
+import { resetsPage } from './resets.js';
+import { planetsPage } from './planets.js';
+import { universePage } from './universes.js';
+import { hellPage } from './hell.js';
+import { pResPage } from './p_res.js';
+import { perksPage } from './perks.js';
+import { mainEventsPage, minorEventsPage, progressEventsPage, specialEventsPage} from './events.js';
+import { racesPage, traitsPage } from './species.js';
+import { structuresIndex } from './structuresIndex.js';
+import { renderTechPage } from './tech.js';
+import { projectsPage } from './projects.js';
+import { crisprPage } from './crispr.js';
+import { bloodPage } from './blood.js';
+import { achievePage, featPage } from './achieve.js';
+import { changeList } from './change.js';
 
-const reRegExpChar = /[\\^$.*+?()[\]{}|]/g, reHasRegExpChar = RegExp(reRegExpChar.source), removeStartHtmlRegExp = RegExp("<[^/][^>]+>", "g"), removeEndHtmlRegExp = RegExp("</\[^>]+>", "g");
-
-let wrapper, button, popper, input, checkbox, result, vue;
-let inited = false;
-let isPopperOpened = false;
-let isPopperAnimating = false;
-let virtualWiki = {};
-
-let sub2Main = {};
-export function initSearch(parent){
-    document.getElementsByTagName("body")[0].append($(`<div id="popperWrapper"></div>`)[0]);
-    parent.append('<button id="searchButton" class="button">🔍</button>');
-    parent.append(`<div id='searchPopper'>
-            <input id='searchPopperInput' class='input' placeholder="${loc('wiki_search_placeholder')}" v-model="searchString" v-on:input="inputChanged">
-            <b-switch size="is-small" id="searchPopperCheckBox" title="${loc('wiki_search_regex')}" v-model="useRegex" v-on:input="inputChanged"></b-switch>
-            <div id="searchPopperResult" class="dropdown-content" ref="searchPopperResult" v-on:scroll="scrollHandle">
-                <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
-                <div id="searchPopperResultContainer" :style="listBlankPadding">
-                    <div v-for="result in resultsForShow" :key="result.hash" class="searchPopperResultItem">
-                        <div class="searchPopperResultTitle">
-                         <a class="searchPopperResultMainTitle dropdown-item" v-on:click="gotoHash(result.hash)">{{result.title}}</a>
-                            <a class="searchPopperResultSubTitle has-text-success dropdown-item" v-on:click="gotoHash(result.hash,true)">{{result.sub}}</a>
-                            <div class="searchPopperResultSubTitle has-text-label" v-if="result.showMain">{{result.main}}</div>
-                        </div>
-                        <div class="searchPopperResultContent">
-                            <div v-for="(paragraph, index) in result.content" :key="result.hash+index" class="searchPopperResultContentParagraph" v-on:click="gotoHash(result.hash)" v-html="paragraph"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`);
-    vue = new Vue({
-        el: '#searchPopper',
-        data: {
-            searchString: "",
-            lastSearchString: "",
-            searchRegexps: null,
-            useRegex: false,
-            filteredResults: [],
-            isLoading: true,
-            start: 0,
-            showCount: 0,
-            resultDefaultHeight: 120
-        },
-        methods:{
-            inputChanged: function (){
-                let searchString = this.searchString.trim();
-                if(searchString.length === 0){
-                    this.filteredResults = Object.keys(virtualWiki).map(e=>virtualWiki[e]);
-                    this.lastSearchString = "";
-                    this.searchRegexps = null;
-                    return;
-                }
-                if(searchString === this.lastSearchString){
-                    return;
-                }
-                this.lastSearchString = searchString;
-                this.filteredResults = [];
-                this.searchRegexps = [];
-                if(this.useRegex){
-                    this.searchRegexps.push(new RegExp(searchString, "ig"));
-                }else if(/\S \S/.test(searchString)){
-                    searchString.split(" ").forEach(str=>{
-                        this.searchRegexps.push(new RegExp(escapeRegExp(str), "ig"));
-                    });
-                }else{
-                    this.searchRegexps.push(new RegExp(escapeRegExp(searchString), "ig"));
-                }
-                for(let hash in virtualWiki){
-                    let content = [];
-                    virtualWiki[hash].content?.forEach(paragraph => {
-                        for (let regexp of this.searchRegexps) {
-                            if (!regexp.test(paragraph)) {
-                                return;
-                            }
-                        }
-                        if(!paragraph.includes("</")){
-                            for (let regexp of this.searchRegexps) {
-                                paragraph = paragraph.replace(regexp, `<span class="has-text-warning">\$\&</span>`);
-                            }
-                        }
-                        content.push(paragraph);
-                    });
-                    if(content.length === 0){
-                        let title = virtualWiki[hash].title;
-                        let flag = true;
-                        for (let regexp of this.searchRegexps) {
-                            if (!regexp.test(title)) {
-                                flag = false;
-                                break;
-                            }
-                        }
-                        if(flag){
-                            content.push(title);
-                        }
-                    }
-                    if(content.length > 0){
-                        let result = virtualWiki[hash];
-                        this.filteredResults.push({
-                            hash: result.hash,
-                            title: result.title,
-                            sub: result.sub,
-                            main: result.main,
-                            showMain: result.showMain,
-                            content: content
-                        });
-                    }
-                }
-                this.$refs["searchPopperResult"].scrollTop = 0;
-            },
-            gotoHash: function(hash, isSub = false){
-                let array = hash.split('-');
-                hideSearchPopper();
-                let sub = array[0];
-                let isTp = sub.startsWith("tp_");
-                if(isTp){
-                    sub = sub.slice(3);
-                }
-                let frag = array[1];
-                if(frag && frag.endsWith("_tech")){
-                    if(isSub){
-                        menuDispatch(isTp ? "tp_tech" : "tech", sub);
-                    }else{
-                        menuDispatch(isTp ? "tp_tech" : "tech", sub, frag.slice(0, -5));
-                    }
-                }else{
-                    if(isSub){
-                        menuDispatch(sub2Main[sub], sub);
-                    }else{
-                        menuDispatch(sub2Main[sub], sub, frag);
-                    }
-                }
-                if(this.searchRegexps){
-                    if (!CSS.highlights) {
-                        console.log("CSS Custom Highlight API not supported.");
-                        return;
-                    }
-                    CSS.highlights.clear();
-                    let ranges = [];
-                    let treeWalker = document.createTreeWalker(document.getElementById("content"), NodeFilter.SHOW_TEXT);
-                    let currentNode = treeWalker.nextNode();
-                    while (currentNode) {
-                        if(currentNode instanceof Text) {
-                            for (let regexp of this.searchRegexps) {
-                                for (let match of currentNode.textContent.matchAll(regexp)) {
-                                    let range = new Range();
-                                    range.setStart(currentNode, match.index);
-                                    range.setEnd(currentNode, match.index + match[0].length);
-                                    ranges.push(range);
-                                }
-                            }
-                            currentNode = treeWalker.nextNode();
-                        }
-                    }
-                    CSS.highlights.set("search-results", new Highlight(...ranges));
-                }
-            },
-            scrollHandle() {
-                this.start = ~~(this.$refs["searchPopperResult"].scrollTop / this.resultDefaultHeight);
-            },
-            getResultHeight() {
-                this.$nextTick(() => {
-                    this.showCount = ~~(this.$refs["searchPopperResult"].offsetHeight / this.resultDefaultHeight) + 6;
-                });
+let content;
+let fakecontent;
+let earlyExit = false;
+const pages = [
+    [faqPage, false, "faq", undefined],
+    [basicsPage, false, "gameplay", "basics"],
+    [mechanicsPage, true, "gameplay", "mechanics"],
+    [govPage, true, "gameplay", "government"],
+    [governPage, true, "gameplay", "governor"],
+    [combatPage, true, "gameplay", "combat"],
+    [challengesPage, false, "gameplay", "challenges"],
+    [resetsPage, true, "gameplay", "resets"],
+    [planetsPage, false, "gameplay", "planets"],
+    [universePage, true, "gameplay", "universes"],
+    [hellPage, true, "gameplay", "hell"],
+    [pResPage, true, "prestige", "resources"],
+    [perksPage, true, "prestige", "perks"],
+    [mainEventsPage, true, "events", "major"],
+    [minorEventsPage, true, "events", "minor"],
+    [progressEventsPage, true, "events", "progress"],
+    [specialEventsPage, true, "events", "special"],
+    [racesPage, true, "species", "races"],
+    [traitsPage, true, "species", "traits"],
+    [structuresIndex, false, "structures", "prehistoric"],
+    [structuresIndex, false, "structures", "planetary"],
+    [structuresIndex, false, "structures", "space"],
+    [structuresIndex, false, "structures", "interstellar"],
+    [structuresIndex, false, "structures", "intergalactic"],
+    [structuresIndex, false, "structures", "hell"],
+    [renderTechPage, false, "tech", "prehistoric"],
+    [renderTechPage, false, "tech", "civilized"],
+    [renderTechPage, false, "tech", "discovery"],
+    [renderTechPage, false, "tech", "industrialized"],
+    [renderTechPage, false, "tech", "globalized"],
+    [renderTechPage, false, "tech", "early_space"],
+    [renderTechPage, false, "tech", "deep_space"],
+    [renderTechPage, false, "tech", "interstellar"],
+    [renderTechPage, false, "tech", "tech_intergalactic"],
+    [renderTechPage, false, "tech", "dimensional"],
+    [structuresIndex, false, "tp_structures", "tp_prehistoric"],
+    [structuresIndex, false, "tp_structures", "tp_planetary"],
+    [structuresIndex, false, "tp_structures", "tp_space"],
+    [structuresIndex, false, "tp_structures", "tp_tauceti"],
+    [renderTechPage, false, "tp_tech", "tp_prehistoric"],
+    [renderTechPage, false, "tp_tech", "tp_civilized"],
+    [renderTechPage, false, "tp_tech", "tp_discovery"],
+    [renderTechPage, false, "tp_tech", "tp_industrialized"],
+    [renderTechPage, false, "tp_tech", "tp_globalized"],
+    [renderTechPage, false, "tp_tech", "tp_early_space"],
+    [renderTechPage, false, "tp_tech", "tp_deep_space"],
+    [renderTechPage, false, "tp_tech", "solar"],
+    [renderTechPage, false, "tp_tech", "tp_tauceti"],
+    [crisprPage, true, "arpa", "crispr"],
+    [projectsPage, true, "arpa", "projects"],
+    [bloodPage, true, "arpa", "blood"],
+    [achievePage, false, "achievements", "achievements"],
+    [featPage, false, "achievements", "feats"],
+    [changeList, false, "changelog", "changelog"]
+];
+let sections = {
+    faq: [], gameplay: [], prestige: [], events: [], species: [], structures: [],
+    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: [], changelog: []
+};
+let index = {
+    faq: [], gameplay: [], prestige: [], events: [], species: [], structures: [],
+    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: [], changelog: []
+};
+function indexPage(page){
+    if(pages[page][1]){
+        pages[page][0](fakecontent);
+        let v = $("#sideContent a");
+        for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, v[i].getAttribute("href"), pages[page][3]]);
+        fakecontent.empty();
+    } else {
+        if(pages[page][0] === faqPage){
+            faqPage();
+            let v = $(".question h2");
+            for(let i = 0; i < v.length; i++) index["faq"].push([v[i].innerText, `wiki.html#question-faq-${v[i].id}`]);
+        } else if(pages[page][0] === basicsPage){
+            basicsPage(fakecontent);
+            let v = $(".header.has-text-warning");
+            for(let i = 0; i < v.length; i++) index["gameplay"].push([v[i].innerText, `wiki.html#basics-gameplay-${v[i].innerText.toLowerCase().replaceAll(' ', '_')}`, "basics"]);
+        } else if(pages[page][0] === challengesPage){
+            challengesPage(fakecontent);
+            let v = $("#sideContent a");
+            for(let i = 0; i < v.length; i++) index["gameplay"].push([v[i].innerText.replaceAll('ᄂ', ''), v[i].getAttribute("href"), "challenges"]);
+        } else if(pages[page][0] === planetsPage){
+            planetsPage(fakecontent);
+            let v = $("h4");
+            for(let i = 0; i < v.length; i++) index["gameplay"].push([v[i].innerText, "wiki.html#planets-gameplay", "planets"]);
+        } else if(pages[page][0] === structuresIndex){
+            if(pages[page][2] === "tp_structures"){
+                let v = structuresIndex[pages[page][3].substring(3)];
+                for(let i = 0; i < v.length; i++) index["tp_structures"].push([v[i][0], "wiki.html#" + v[i][1], pages[page][3]]);
+            } else {
+                let v = structuresIndex[pages[page][3]];
+                for(let i = 0; i < v.length; i++) index["structures"].push([v[i][0], "wiki.html#" + v[i][1], pages[page][3]]);
             }
-        },
-        computed: {
-            end() {
-                return this.filteredResults[this.start + this.showCount]
-                    ? this.start + this.showCount
-                    : this.filteredResults.length;
-            },
-
-            listBlankPadding() {
-                return {
-                    paddingTop: this.start * this.resultDefaultHeight + "px",
-                    paddingBottom: (this.filteredResults.length - this.end) * this.resultDefaultHeight + "px",
-                };
-            },
-            resultsForShow() {
-                return this.filteredResults.slice(this.start, this.end);
-            },
-        },
-        mounted() {
-            window.onresize = this.getResultHeight;
+        } else if(pages[page][0] === renderTechPage){
+            if(pages[page][2] === "tp_tech"){
+                renderTechPage(pages[page][3], "truepath");
+                let v = $("#sideContent a");
+                for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, v[i].getAttribute("href"), pages[page][3]]);
+            } else {
+                renderTechPage(pages[page][3], "standard");
+                let v = $("#sideContent a");
+                for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, v[i].getAttribute("href"), pages[page][3]]);
+            }
+        } else if(pages[page][0] === achievePage){
+            achievePage();
+            let v = $(".achievement .achieve");
+            for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, "wiki.html#list-achievements", pages[page][3]]);
+        } else if(pages[page][0] === featPage){
+            featPage();
+            let v = $(".achievement .achieve");
+            for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, "wiki.html#feats-achievements", pages[page][3]]);
+        } else if(pages[page][0] === changeList){
+            for(let i = 0; i < changeList.length; i++){
+                index["changelog"].push([changeList[i].version, `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                index["changelog"].push([changeList[i].date, `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                for(let k = 0; k < changeList[i].changes.length; k++){
+                    index["changelog"].push([changeList[i].changes[k], `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                }
+            }
         }
-    });
-    wrapper = document.getElementById("popperWrapper");
-    popper = document.getElementById("searchPopper");
-    input = document.getElementById("searchPopperInput");
-    checkbox = document.getElementById("searchPopperCheckBox");
-    result = document.getElementById("searchPopperResult");
-    button = document.getElementById("searchButton");
-
-    wrapper.addEventListener("click", toggleSearchPopper);
-    button.addEventListener("click", toggleSearchPopper);
-    button.addEventListener("mouseenter", showSearchPopper);
+        fakecontent.empty();
+    }
 }
-
-function showSearchPopper() {
-    if(!isPopperAnimating && !isPopperOpened) {
-        isPopperAnimating = true;
-        button.setAttribute("popper-show", '');
-        popper.setAttribute("popper-show", '');
-        input.setAttribute("popper-show", '');
-        checkbox.setAttribute("popper-show", '');
-        setTimeout(() => {
-            result.setAttribute("popper-show", '');
-            wrapper.setAttribute("popper-show", '');
+export function cancelSearchIndexing(){
+    earlyExit = true;
+}
+function indexWiki(){
+    for(const k of Object.keys(index)) index[k] = [];
+    content.attr("id", "");
+    content.append(`<span id="content" class="temp-indexer" style="display: none"></span>`);
+    fakecontent = $("#content");
+    earlyExit = false;
+    async function nonLockingLoop(indexingIndex = 0){
+        if(earlyExit){
+            fakecontent.remove();
+            content.attr("id", "content");
+            return;
+        }
+        if(indexingIndex < pages.length){
             setTimeout(() => {
-                isPopperAnimating = false;
-                initVirtualWiki(vue);
-            }, 650);
-        }, 400);
-        isPopperOpened = true;
-    }
-}
-
-function hideSearchPopper() {
-    if(!isPopperAnimating && isPopperOpened) {
-        isPopperAnimating = true;
-        result.removeAttribute("popper-show");
-        setTimeout(() => {
-                wrapper.removeAttribute("popper-show");
-                input.removeAttribute("popper-show");
-                checkbox.removeAttribute("popper-show");
-                setTimeout(() => {
-                    button.removeAttribute("popper-show");
-                    popper.removeAttribute("popper-show");
-                    isPopperAnimating = false;
-                }, 400);
-        }, 600);
-        isPopperOpened = false;
-    }
-}
-
-function toggleSearchPopper() {
-    if(!isPopperAnimating){
-        isPopperOpened?hideSearchPopper():showSearchPopper();
-    }
-}
-
-function initVirtualWiki(vue){
-    if(inited)return;
-    mainPage(true);
-    faqPage(true);
-    gamePlayPage(null, true);
-    prestigePage(null, true);
-    eventsPage(null, true);
-    speciesPage(null, true);
-    renderStructurePage(null, "standard", true);
-    ["primitive","civilized","discovery","industrialized","globalized","early_space","deep_space","interstellar","intergalactic","dimensional"].forEach(era => renderTechPage(era, "standard", true));
-    renderStructurePage(null, "truepath", true);
-    ["primitive","civilized","discovery","industrialized","globalized","early_space","deep_space","solar","tauceti"].forEach(era => renderTechPage(era, "truepath", true));
-    arpaPage(null, true);
-    renderAchievePage(null, true);
-    changeLog();
-    for(let hash in virtualWiki){
-        let array = hash.split('-');
-        let sub = array[0];
-        let subForLoc = sub;
-        if(subForLoc.startsWith("tp_")){
-            subForLoc = subForLoc.slice(3);
-        }
-        let frag = array[1];
-        if(frag && frag.endsWith("_tech")){
-            virtualWiki[hash].main = loc(`wiki_menu_tech`);
-        }else{
-            virtualWiki[hash].main = loc(`wiki_menu_${sub2Main[sub]}`);
-        }
-        virtualWiki[hash].sub = loc(`wiki_menu_${subForLoc}`);
-        if(sub !== sub2Main[sub]){
-            virtualWiki[hash].showMain = true;
+                indexPage(indexingIndex);
+                nonLockingLoop(++indexingIndex);
+            }, 0);
+        } else {
+            fakecontent.remove();
+            content.attr("id", "content");
         }
     }
-    vue.$data.filteredResults = Object.keys(virtualWiki).map(e=>virtualWiki[e]);
-    vue.$data.isLoading = false;
-    vue.getResultHeight();
-    inited = true;
+    nonLockingLoop();
 }
 
-export function add2virtualWikiContent(hash, content, removeHtml){
-    if(removeHtml){
-        content = content.replace(removeStartHtmlRegExp,"").replace(removeEndHtmlRegExp,"&emsp;");
-    }
-    if(virtualWiki[hash]){
-        if(virtualWiki[hash].content){
-            virtualWiki[hash].content.push(content);
-        }else{
-            virtualWiki[hash].content = [content];
-        }
-    }else{
-        virtualWiki[hash] = {
-            hash: hash,
-            content: [content]
-        };
-    }
-}
-
-export function add2virtualWikiTitle(hash, title){
-    if(virtualWiki[hash]){
-        virtualWiki[hash].title = title;
-    }else{
-        virtualWiki[hash] = {
-            hash: hash,
-            title: title
-        };
-    }
-}
-
-export function addSub2Main(main, sub){
-    sub2Main[sub] = main;
-}
-
-function escapeRegExp(string) {
-    return (string && reHasRegExpChar.test(string))
-        ? string.replace(reRegExpChar, '\\$&')
-        : string;
-}
-
-function changeLog() {
-    for (let i = 0; i < changeList.length; i++) {
-        let hash = `changelog-changelog${i}`;
-        let revision = changeList[i].hasOwnProperty('revision') ? changeList[i].revision : '';
-        add2virtualWikiTitle(hash, `${changeList[i].version}${revision}`);
-        add2virtualWikiContent(hash, changeList[i].date);
-
-        for (let j = 0; j < changeList[i].changes.length; j++) {
-            add2virtualWikiContent(hash, changeList[i].changes[j]);
+function processSearch(input){
+    for(const k of Object.keys(sections)) sections[k] = [];
+    if(input.val().length){
+        let expression = new RegExp(input.val(), "gi");
+        
+        for(const k of Object.keys(index)){
+            for(let i = 0; i < index[k].length; i++){
+                if(index[k][i][0].match(expression) !== null){
+                    sections[k].push(index[k][i]);
+                }
+            }
         }
     }
+    updateResults();
+}
+function updateResults(){
+    for(const k of Object.keys(sections)){
+        let element = $("#searchResult-" + k);
+        clearElement(element);
+        if(sections[k].length === 0){
+            element.append(`<h1>${loc('wiki_search_placeholder')}</h1>`);
+        } else {
+            let headers = [];
+            for(const v of sections[k]){
+                if(v[2] !== undefined){
+                    if(!headers.includes(v[2])){
+                        headers.push(v[2]);
+                        if((v[2].match(/\./gi) || []).length > 1){
+                            element.append(`<div class="infoBox" id="changelog-entry-${v[2].replaceAll('.', '_')}"><h1>v${v[2]}</h1></div>`);
+                        } else {
+                            element.append(`<div class="infoBox" id="${v[2]}"><h1>${loc("wiki_menu_" + (v[2].includes("tp_") ? v[2].substring(3) : v[2].includes("tech_") ? v[2].substring(5) : v[2]))}</h1></div>`);
+                        }
+                    }
+                    if((v[2].match(/\./gi) || []).length > 1){
+                        $(`#changelog-entry-${v[2].replaceAll('.', '_')}`).append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                    } else {
+                        $(`#${v[2]}`).append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                    }
+                } else {
+                    element.append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                }
+            }
+        }
+    }
+}
+export function search(){
+    content = $("#content");
+    clearElement(content);
+    content.append(
+        `
+        <div class="infoBox">
+            ${loc('wiki_menu_search')}
+            <div class="control is-clearfix">
+                <input id="searchInput" class="input" placeholder="${loc('wiki_search_regex_support')}"type="text"/>
+            </div>
+        </div>
+        `
+    );
+    let input = $("#searchInput");
+    input.parent().on('input', ':text', _ => processSearch(input));
+    indexWiki();
+    for(const k of Object.keys(sections)){
+        content.append(`<div class="infoBox"><h1 style="padding-bottom: 5px">${loc('wiki_menu_' + k)}</h1><div id="${"searchResult-" + k}"></div></div>`);
+    }
+    updateResults(content);
 }
