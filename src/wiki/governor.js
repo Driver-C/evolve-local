@@ -4,8 +4,8 @@ import { gmen, gov_traits, gov_tasks } from './../governor.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
 
-export function governPage(content, forSearch = false) {
-    let mainContent = sideMenu('create',content, null, null, forSearch);
+export function governPage(content){
+    let mainContent = sideMenu('create',content);
 
     {
         let govern = infoBoxBuilder(mainContent,{ name: 'intro', template: 'governor', label: loc('governor'), paragraphs: 4, h_level: 2,
@@ -16,8 +16,8 @@ export function governPage(content, forSearch = false) {
             data_link: {
                 1: ['wiki.html#crispr-prestige-governance']
             }
-        }, null, forSearch, "governor");
-        sideMenu('add',`governor-gameplay`,`intro`,loc('governor'), forSearch);
+        });
+        sideMenu('add',`governor-gameplay`,`intro`,loc('governor'));
 
         Object.keys(gmen).forEach(function (gov){
             let desc = '';
@@ -32,8 +32,8 @@ export function governPage(content, forSearch = false) {
                 rawtext: {
                     2: desc
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,gov,loc(`governor_${gov}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,gov,loc(`governor_${gov}`));
         });
     }
 
@@ -43,8 +43,8 @@ export function governPage(content, forSearch = false) {
                 2: [3,loc('governor_bureaucrat'),4],
                 3: [Object.keys(gov_tasks).length]
             }
-        }, null, forSearch);
-        sideMenu('add',`governor-gameplay`,`task`,loc('wiki_governor_task'), forSearch);
+        });
+        sideMenu('add',`governor-gameplay`,`task`,loc('wiki_governor_task'));
 
         {
             let task = 'tax';
@@ -60,8 +60,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     3: ['wiki.html#civilized-tech-tax_rates']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -78,8 +78,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     3: ['wiki.html#civilized-tech-containerization']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -97,8 +97,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     4: ['wiki.html#civilized-tech-containerization']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -116,8 +116,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     4: ['wiki.html#civilized-tech-mercs']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -136,8 +136,8 @@ export function governPage(content, forSearch = false) {
                     2: ['wiki.html#civilized-tech-spy'],
                     3: ['wiki.html#early_space-tech-unification2']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -165,8 +165,8 @@ export function governPage(content, forSearch = false) {
                     6: ['wiki.html#civilized-tech-spy'],
                     7: ['wiki.html#early_space-tech-unification2']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -182,8 +182,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     2: ['wiki.html#traits-species-major_slaver']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -199,8 +199,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     2: ['wiki.html#traits-species-major_cannibalize']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -217,8 +217,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     2: ['wiki.html#traits-species-major_hooved']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]));
         }
 
         {
@@ -239,8 +239,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     7: ['wiki.html#interstellar-structures-mass_ejector']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
 
         {
@@ -258,8 +258,8 @@ export function governPage(content, forSearch = false) {
                 data_link: {
                     4: [false,'wiki.html#resets-prestige-infusion','wiki.html#hell-structures-spire']
                 }
-            }, null, forSearch, "governor");
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`), forSearch);
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
         }
     }
 }

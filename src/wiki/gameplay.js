@@ -10,20 +10,7 @@ import { planetsPage } from './planets.js';
 import { universePage } from './universes.js';
 import { hellPage } from './hell.js';
 
-export function gamePlayPage(zone,forSearch=false){
-    if(forSearch){
-        basicsPage(null,true);
-        mechanicsPage(null, true);
-        govPage(null,true);
-        governPage(null, true);
-        combatPage(null, true);
-        challengesPage(null, true);
-        resetsPage(null, true);
-        planetsPage(null, true);
-        universePage(null, true);
-        hellPage(null, true);
-        return;
-    }
+export function gamePlayPage(zone){
     let content = $(`#content`);
     clearElement(content);
 

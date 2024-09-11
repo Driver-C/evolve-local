@@ -5,10 +5,9 @@ import { vBind } from './../functions.js';
 import { neg_roll_traits } from './../races.js';
 import { tradeRatio } from './../resources.js';
 import { sideMenu, subSideMenu, infoBoxBuilder, getSolarName, createCalcSection } from './functions.js';
-import {add2virtualWikiContent} from "./search";
 
-export function challengesPage(content, forSearch = false){
-    let mainContent = sideMenu('create',content, null, null, forSearch);
+export function challengesPage(content){
+    let mainContent = sideMenu('create',content);
     
     {   // Intro
         infoBoxBuilder(mainContent,{ name: 'intro', template: 'challenges', paragraphs: 3, h_level: 2,
@@ -19,8 +18,8 @@ export function challengesPage(content, forSearch = false){
             data_link: {
                 2: ['wiki.html#crispr-prestige-hardened_genes']
             }
-        }, null, forSearch);
-        sideMenu('add',`challenges-gameplay`,'intro',loc('wiki_menu_intro'), forSearch);
+        });
+        sideMenu('add',`challenges-gameplay`,'intro',loc('wiki_menu_intro'));
     }
     
     // Challenge Genes
@@ -37,8 +36,8 @@ export function challengesPage(content, forSearch = false){
                 2: ['wiki.html#mechanics-gameplay-mastery'],
                 3: ['wiki.html#mechanics-gameplay-mastery']
             }
-        }, null, forSearch);
-        sideMenu('add',`challenges-gameplay`,'genes_intro',loc('wiki_challenges_genes_intro'), forSearch);
+        });
+        sideMenu('add',`challenges-gameplay`,'genes_intro',loc('wiki_challenges_genes_intro'));
         
         {   // No Starting Plasmids
             infoBoxBuilder(genes,{ name: 'genes_plasmid', template: 'challenges', paragraphs: 4, break: [4], h_level: 2,
@@ -53,8 +52,8 @@ export function challengesPage(content, forSearch = false){
                     2: ['wiki.html#planetary-structures-temple'],
                     4: [false,'wiki.html#universes-gameplay-antimatter']
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_plasmid',loc('wiki_challenges_genes_plasmid'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_plasmid',loc('wiki_challenges_genes_plasmid'));
         }
         
         {   // Weak Mastery
@@ -67,8 +66,8 @@ export function challengesPage(content, forSearch = false){
                     1: [false,false,'wiki.html#mechanics-gameplay-mastery'],
                     2: [false,'wiki.html#universes-gameplay-antimatter']
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_mastery',loc('wiki_challenges_genes_mastery'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_mastery',loc('wiki_challenges_genes_mastery'));
         }
         
         {   // No Free Trade
@@ -77,8 +76,8 @@ export function challengesPage(content, forSearch = false){
                     1: [loc(`evo_challenge_trade`),loc(`wiki_challenges_gene`),loc(`resource_market_buy`),loc(`resource_market_sell`)],
                     2: [loc(`resource_market_trade_routes`)]
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_trade',loc('wiki_challenges_genes_trade'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_trade',loc('wiki_challenges_genes_trade'));
         }
         
         {   // No Manual Crafting
@@ -87,8 +86,8 @@ export function challengesPage(content, forSearch = false){
                     1: [loc(`evo_challenge_craft`),loc(`wiki_challenges_gene`)],
                     2: [loc(`job_craftsman`)]
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_craft',loc('wiki_challenges_genes_craft'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_craft',loc('wiki_challenges_genes_craft'));
         }
         
         {   // Junk Gene
@@ -99,20 +98,20 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     1: [false,false,false,'wiki.html#crispr-prestige-genetic_memory']
                 }
-            }, null, forSearch);
-            crispr.find?.(`div.para`).append(`<span>${loc('wiki_challenges_genes_bad_para2')}</span>`);
+            });
+            crispr.find(`div.para`).append(`<span>${loc('wiki_challenges_genes_bad_para2')}</span>`);
             let traits = $(`
                 <div class="para">
                     <span>${loc('wiki_challenges_genes_crispr_para3')}</span>
                 </div>
             `);
-            crispr.append?.(traits);
+            crispr.append(traits);
             let comma = false;
             neg_roll_traits.forEach(function (trait){
-                traits.append?.(`${comma ? ', ' : ''}<a href="wiki.html#traits-species-major_${trait}" target="_blank" class="has-text-warning">${loc('trait_'+ trait + '_name')}</a>`);
+                traits.append(`${comma ? ', ' : ''}<a href="wiki.html#traits-species-major_${trait}" target="_blank" class="has-text-warning">${loc('trait_'+ trait + '_name')}</a>`);
                 comma = true;
             });
-            subSideMenu('add',`challenges-gameplay`,'genes_crispr',loc('wiki_challenges_genes_crispr'), forSearch);
+            subSideMenu('add',`challenges-gameplay`,'genes_crispr',loc('wiki_challenges_genes_crispr'));
         }
 
         {   // Bad Genes
@@ -124,8 +123,8 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     4: [false,'wiki.html#challenges-gameplay-scenarios_truepath']
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_bad',loc('wiki_challenges_genes_bad'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_bad',loc('wiki_challenges_genes_bad'));
         }
 
         {   // Weak Genes
@@ -141,8 +140,8 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     5: [false,'wiki.html#challenges-gameplay-scenarios_truepath']
                 }
-            }, null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'genes_weak',loc('wiki_challenges_genes_weak'), forSearch);
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_weak',loc('wiki_challenges_genes_weak'));
         }
     }
     
@@ -153,8 +152,8 @@ export function challengesPage(content, forSearch = false){
                 1: [loc(`evo_challenge_run`),loc(`evo_challenge_genes`)],
                 2: [loc(`wiki_challenges_mode`)]
             }
-        }, null, forSearch);
-        sideMenu('add',`challenges-gameplay`,'modes_intro',loc('wiki_challenges_modes_intro'), forSearch);
+        });
+        sideMenu('add',`challenges-gameplay`,'modes_intro',loc('wiki_challenges_modes_intro'));
         
         {   // Joyless
             let joyless = infoBoxBuilder(modes,{ name: 'modes_joyless', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
@@ -170,9 +169,9 @@ export function challengesPage(content, forSearch = false){
                     3: [false,'wiki.html#space-structures-biodome','wiki.html#civilized-tech-theatre'],
                     4: ['wiki.html#challenges-gameplay-scenarios_cataclysm']
                 }
-            }, null, forSearch);
-            addAchievements(joyless,false,['joyless'], null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_joyless',loc('wiki_challenges_modes_joyless'), forSearch);
+            });
+            addAchievements(joyless,false,['joyless']);
+            subSideMenu('add',`challenges-gameplay`,'modes_joyless',loc('wiki_challenges_modes_joyless'));
         }
         
         {   // Steelen
@@ -187,10 +186,10 @@ export function challengesPage(content, forSearch = false){
                     3: ['wiki.html#civilized-tech-steel','wiki.html#discovery-tech-bessemer_process','wiki.html#industrialized-tech-oxygen_converter','wiki.html#globalized-tech-electric_arc_furnace'],
                     4: [false,'wiki.html#resets-prestige-bioseed']
                 }
-            }, null, forSearch);
-            addAchievements(steelen,false,['steelen'], null, forSearch);
-            addAchievements(steelen,true,['steelem'], null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_steelen',loc('wiki_challenges_modes_steelen'), forSearch);
+            });
+            addAchievements(steelen,false,['steelen']);
+            addAchievements(steelen,true,['steelem']);
+            subSideMenu('add',`challenges-gameplay`,'modes_steelen',loc('wiki_challenges_modes_steelen'));
         }
         
         {   // Decay
@@ -205,8 +204,8 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     6: [false,'wiki.html#resets-prestige-blackhole','wiki.html#resets-prestige-vacuum']
                 }
-            }, null, forSearch);
-            addAchievements(decay,false,['dissipated'], null, forSearch);
+            });
+            addAchievements(decay,false,['dissipated']);
             addRequirements(decay,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -218,10 +217,10 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
+            ]);
             let subSection = createCalcSection(decay,'challenges','decay',loc('evo_challenge_decay'));
             decayCalc(subSection);
-            subSideMenu('add',`challenges-gameplay`,'modes_decay',loc('wiki_challenges_modes_decay'), forSearch);
+            subSideMenu('add',`challenges-gameplay`,'modes_decay',loc('wiki_challenges_modes_decay'));
         }
         
         {   // EM Field
@@ -238,8 +237,8 @@ export function challengesPage(content, forSearch = false){
                     4: ['wiki.html#space-structures-elerium_ship'],
                     5: [false,'wiki.html#resets-prestige-ascension']
                 }
-            }, null, forSearch);
-            addAchievements(emfield,false,['technophobe'], null, forSearch);
+            });
+            addAchievements(emfield,false,['technophobe']);
             addRequirements(emfield,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -252,8 +251,8 @@ export function challengesPage(content, forSearch = false){
                     ]
                     
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_emfield',loc('wiki_challenges_modes_emfield'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_emfield',loc('wiki_challenges_modes_emfield'));
         }
         
         {   // Inflation
@@ -277,8 +276,8 @@ export function challengesPage(content, forSearch = false){
                     9: ['wiki.html#interstellar-structures-exchange'],
                     
                 }
-            }, null, forSearch);
-            addAchievements(inflation,false,['wheelbarrow'], null, forSearch);
+            });
+            addAchievements(inflation,false,['wheelbarrow']);
             addRequirements(inflation,[
                 {
                     text: `wiki_challenges_reqs_achieve`,
@@ -290,10 +289,10 @@ export function challengesPage(content, forSearch = false){
                     ]
                     
                 }
-            ], forSearch);
+            ]);
             let subSection = createCalcSection(inflation,'challenges','inflation',loc('evo_challenge_inflation'));
             inflationCalc(subSection);
-            subSideMenu('add',`challenges-gameplay`,'modes_inflation',loc('wiki_challenges_modes_inflation'), forSearch);
+            subSideMenu('add',`challenges-gameplay`,'modes_inflation',loc('wiki_challenges_modes_inflation'));
         }
 
         {   // Failed Experiment
@@ -311,9 +310,9 @@ export function challengesPage(content, forSearch = false){
                     3: [false,false,'wiki.html#traits-species-major_ooze'],
                     5: [false,'wiki.html#resets-prestige-mad']
                 }
-            }, null, forSearch);
-            addAchievements(failed,false,['extinct_sludge','gross'],{gross: true}, forSearch);
-            addAchievements(failed,true,['slime_lord'], null, forSearch);
+            });
+            addAchievements(failed,false,['extinct_sludge','gross'],{gross: true});
+            addAchievements(failed,true,['slime_lord']);
             addRequirements(failed,[
                 {
                     text: `wiki_challenges_reqs_achieve`,
@@ -340,8 +339,8 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_sludge',loc('wiki_challenges_modes_sludge'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_sludge',loc('wiki_challenges_modes_sludge'));
         }
 
         {   // Orbital Decay
@@ -356,8 +355,8 @@ export function challengesPage(content, forSearch = false){
                     13: [loc(`interstellar_alpha_starport_title`), 100],
                     14: [loc(`wiki_challenges_scenarios_cataclysm`)]
                 }
-            }, null, forSearch);
-            addAchievements(orbit,false,['lamentis'], null, forSearch);
+            });
+            addAchievements(orbit,false,['lamentis']);
             addRequirements(orbit,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -374,8 +373,8 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_orbitdecay',loc('wiki_challenges_modes_orbitdecay'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_orbitdecay',loc('wiki_challenges_modes_orbitdecay'));
         }
 
         {   // Witch Hunter
@@ -385,8 +384,8 @@ export function challengesPage(content, forSearch = false){
                     4: [`300%`,`150%`,`75%`],
                     7: [100]
                 }
-            }, null, forSearch);
-            addAchievements(witch,false,['soul_sponge','nightmare'], null, forSearch);
+            });
+            addAchievements(witch,false,['soul_sponge','nightmare']);
             addRequirements(witch,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -398,8 +397,8 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_witchhunter',loc('wiki_challenges_modes_witchhunter'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_witchhunter',loc('wiki_challenges_modes_witchhunter'));
         }
 
         {   // Gravity Well
@@ -407,8 +406,8 @@ export function challengesPage(content, forSearch = false){
                 para_data: {
                     1: [loc(`evo_challenge_gravity_well`)],
                 }
-            }, null, forSearch);
-            addAchievements(gravity,false,['escape_velocity'], null, forSearch);
+            });
+            addAchievements(gravity,false,['escape_velocity']);
             addRequirements(gravity,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -420,8 +419,8 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'modes_gravity_well',loc('wiki_challenges_modes_gravity_well'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_gravity_well',loc('wiki_challenges_modes_gravity_well'));
         }
     }
     
@@ -433,8 +432,8 @@ export function challengesPage(content, forSearch = false){
                 2: [loc(`evo_challenge_genes`),loc(`evo_challenge_run`)],
                 3: [loc(`evo_challenge_genes`),loc(`evo_challenge_run`),loc(`wiki_challenges_scenario`)]
             }
-        }, null, forSearch);
-        sideMenu('add',`challenges-gameplay`,'scenarios_intro',loc('wiki_challenges_scenarios_intro'), forSearch);
+        });
+        sideMenu('add',`challenges-gameplay`,'scenarios_intro',loc('wiki_challenges_scenarios_intro'));
         
         {   // Genetic Dead End
             let junker = infoBoxBuilder(scenarios,{ name: 'scenarios_junker', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
@@ -447,10 +446,10 @@ export function challengesPage(content, forSearch = false){
                     1: [false,false,'wiki.html#races-species-junker'],
                     3: [false,'wiki.html#resets-prestige-mad']
                 }
-            }, null, forSearch);
-            addAchievements(junker,false,['extinct_junker'], null, forSearch);
-            addAchievements(junker,true,['organ_harvester','the_misery','garbage_pie'], null, forSearch);
-            subSideMenu('add',`challenges-gameplay`,'scenarios_junker',loc('wiki_challenges_scenarios_junker'), forSearch);
+            });
+            addAchievements(junker,false,['extinct_junker']);
+            addAchievements(junker,true,['organ_harvester','the_misery','garbage_pie']);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_junker',loc('wiki_challenges_scenarios_junker'));
         }
         
         {   // Cataclysm
@@ -472,9 +471,9 @@ export function challengesPage(content, forSearch = false){
                     8: ['wiki.html#resources-prestige-plasmids','wiki.html#resources-prestige-antiplasmids',false,false,'wiki.html#resources-prestige-phage'],
                     9: [false,'wiki.html#resets-prestige-bioseed']
                 }
-            }, null, forSearch);
-            addAchievements(cataclysm,false,['iron_will','failed_history'], null, forSearch);
-            addAchievements(cataclysm,true,['finish_line'], null, forSearch);
+            });
+            addAchievements(cataclysm,false,['iron_will','failed_history']);
+            addAchievements(cataclysm,true,['finish_line']);
             addRequirements(cataclysm,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -487,8 +486,8 @@ export function challengesPage(content, forSearch = false){
                     ]
                     
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'scenarios_cataclysm',loc('wiki_challenges_scenarios_cataclysm'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_cataclysm',loc('wiki_challenges_scenarios_cataclysm'));
         }
         
         {   // Banana Republic
@@ -528,9 +527,9 @@ export function challengesPage(content, forSearch = false){
                     17: ['wiki.html#intergalactic-structures-raider'],
                     18: [false,'wiki.html#perks-prestige-banana']
                 }
-            }, null, forSearch);
-            addAchievements(banana,false,['banana'], null, forSearch);
-            addAchievements(banana,true,['banana'], null, forSearch);
+            });
+            addAchievements(banana,false,['banana']);
+            addAchievements(banana,true,['banana']);
             addRequirements(banana,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -548,8 +547,39 @@ export function challengesPage(content, forSearch = false){
                     ]
                     
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'scenarios_banana',loc('wiki_challenges_scenarios_banana'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_banana',loc('wiki_challenges_scenarios_banana'));
+        }
+
+        {   // Fasting
+            let fasting = infoBoxBuilder(scenarios,{ name: 'scenarios_fasting', template: 'challenges', paragraphs: 5, break: [1,2,3,4,5], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_fasting`),loc(`wiki_challenges_scenario`)],
+                    2: [loc(`resource_Food_name`),0],
+                    3: [loc(`job_meditator`)],
+                    4: [loc(`city_tourist_center`)],
+                    5: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
+                },
+                data_link: {
+                    5: [false, 'wiki.html#perks-prestige-endless_hunger']
+                }
+            });
+            addAchievements(fasting,false,['endless_hunger']);
+            addAchievements(fasting,true,['immortal']);
+            addRequirements(fasting,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_infusion`),
+                            color: global.stats.achieve['corrupted'] ? true : false,
+                            link: 'wiki.html#resets-prestige-infusion'
+                        }
+                    ]
+                    
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_fasting',loc('wiki_challenges_scenarios_fasting'));
         }
 
         {   // True Path
@@ -563,7 +593,7 @@ export function challengesPage(content, forSearch = false){
                     2: ['wiki.html#deep_space-tech'],
                     3: ['wiki.html#interstellar-tech','wiki.html#solar-tp_tech']
                 }
-            }, null, forSearch);
+            });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_genes', template: 'challenges', paragraphs: 1, h_level: 2,
                 para_data: {
@@ -572,56 +602,56 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     1: ['wiki.html#challenges-gameplay-genes_plasmid','wiki.html#challenges-gameplay-genes_crispr','wiki.html#challenges-gameplay-genes_bad','wiki.html#challenges-gameplay-genes_weak'],
                 }
-            }, null, forSearch);
+            });
 
-            infoBoxBuilder(truth,{ name: 'scenarios_truepath_rival', template: 'challenges', paragraphs: 5, break: [2,3,5], h_level: 2 }, null, forSearch);
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_rival', template: 'challenges', paragraphs: 5, break: [2,3,5], h_level: 2 });
 
-            infoBoxBuilder(truth,{ name: 'scenarios_truepath_syndicate', template: 'challenges', paragraphs: 2, h_level: 2 }, null, forSearch);
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_syndicate', template: 'challenges', paragraphs: 2, h_level: 2 });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_costs', template: 'challenges', paragraphs: 4, break: [2,3,4], h_level: 2,
                 para_data: {
                     2: ['3x'],
                     3: ['2x'],
                 }
-            }, null, forSearch);
+            });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_market', template: 'challenges', paragraphs: 1, h_level: 2,
                 para_data: {
                     1: ['2x'],
                 } 
-            }, null, forSearch);
+            });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_tax', template: 'challenges', paragraphs: 3, break: [2,4], h_level: 2,
                 para_data: {
                     1: ['50%'],
                     2: [loc('tech_merchandising'),loc('city_temple')],
                 } 
-            }, null, forSearch);
+            });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_money', template: 'challenges', paragraphs: 2, break: [2], h_level: 2,
                 para_data: {
                     1: [loc('city_bank'),'25%'],
                     2: [loc('city_casino'),'50%']
                 } 
-            }, null, forSearch);
+            });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_morale', template: 'challenges', paragraphs: 1, h_level: 2,
                 para_data: {
                     1: ['25%'],
                 } 
-            }, null, forSearch);
+            });
 
-            infoBoxBuilder(truth,{ name: 'scenarios_truepath_foreign', template: 'challenges', paragraphs: 1, h_level: 2 }, null, forSearch);
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_foreign', template: 'challenges', paragraphs: 1, h_level: 2 });
 
             infoBoxBuilder(truth,{ name: 'scenarios_truepath_fuel', template: 'challenges', paragraphs: 1, h_level: 2,
                 para_data: {
                     1: ['25%','150%'],
                 } 
-            }, null, forSearch);
+            });
 
             addAchievements(truth,false,
                 ['pathfinder','overlord','ashanddust','exodus','obsolete','bluepill','retired'],
-                { ashanddust: true, exodus: true, obsolete: true, bluepill: true, retired: true }, forSearch);
+                { ashanddust: true, exodus: true, obsolete: true, bluepill: true, retired: true });
             //addAchievements(truth,true,[]);
             addRequirements(truth,[
                 {
@@ -639,8 +669,8 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'scenarios_truepath',loc('wiki_challenges_scenarios_truepath'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_truepath',loc('wiki_challenges_scenarios_truepath'));
         }
 
         {   // Lone Survivor
@@ -653,8 +683,8 @@ export function challengesPage(content, forSearch = false){
                 data_link: {
                     4: [false,'wiki.html#resets-prestige-eden']
                 }
-            }, null, forSearch);
-            addAchievements(lone,false,['adam_eve'], null, forSearch);
+            });
+            addAchievements(lone,false,['adam_eve']);
             addRequirements(lone,[
                 {
                     text: `wiki_challenges_reqs_reset`,
@@ -666,24 +696,13 @@ export function challengesPage(content, forSearch = false){
                         }
                     ]
                 }
-            ], forSearch);
-            subSideMenu('add',`challenges-gameplay`,'scenarios_lone_survivor',loc('wiki_challenges_scenarios_lone_survivor'), forSearch);
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_lone_survivor',loc('wiki_challenges_scenarios_lone_survivor'));
         }
     }
 }
 
-function addAchievements(content,feat,achievements,nolink,forSearch){
-    if(forSearch){
-        let achieves = loc('wiki_challenges_' + (feat ? 'feats' : 'achievements'));
-        let comma = false;
-        achievements.forEach(function (achieve){
-            let text = feat ? loc(`feat_${achieve}_name`) : (nolink?.[achieve] ? loc(`achieve_${achieve}_name`) : `${loc(`achieve_${achieve}_name`)}`);
-            achieves += `${comma ? ', ' : ''}${text}`;
-            comma = true;
-        });
-        add2virtualWikiContent( `challenges-${content}` , achieves);
-        return;
-    }
+function addAchievements(content,feat,achievements,nolink){
     nolink = nolink || {};
     let achieves = $(`
         <div class="reqs">
@@ -699,35 +718,7 @@ function addAchievements(content,feat,achievements,nolink,forSearch){
     });
 }
 
-function addRequirements(content,requirements,forSearch){
-    if(forSearch){
-        let reqs = loc('wiki_challenges_requirements');
-        let comma = false;
-        requirements.forEach(function (req){
-            let multi = false;
-            let totalColor = false;
-            let reqText = '';
-            req.subreqs.forEach(function (subReq){
-                let subText = subReq.text;
-                let link = subReq.link || false;
-                let color = subReq.color;
-                totalColor = totalColor || color;
-                color = color ? 'success' : 'danger';
-                if (multi){
-                    reqText = loc('wiki_tech_req_or',[reqText,subText]);
-                }
-                else {
-                    multi = true;
-                    reqText = subText;
-                }
-            });
-            reqText = loc(req.text,[reqText]);
-            reqs += `${comma ? `, ` : ``}${reqText}`;
-            comma = true;
-        });
-        add2virtualWikiContent(`challenges-${content}`, reqs);
-        return;
-    }
+function addRequirements(content,requirements){
     let reqs = $(`
         <div class="reqs">
             <span class="has-text-caution">${loc('wiki_challenges_requirements')}</span>
@@ -767,7 +758,6 @@ function addRequirements(content,requirements,forSearch){
 }
 
 function decayCalc(info){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="decayCalc"></div>`);
     info.append(calc);
     
@@ -866,7 +856,6 @@ function decayCalc(info){
 }
 
 function inflationCalc(info){
-    if(!info?.append)return;
     let calc = $(`<div class="calc" id="inflationCalc"></div>`);
     info.append(calc);
     

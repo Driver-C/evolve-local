@@ -3,39 +3,39 @@ import { infoBoxBuilder, sideMenu } from './functions.js';
 import { calcPillar } from './../functions.js';
 import { mechSize, mechWeaponPower, mechCost, terrainEffect, monsters } from './../portal.js';
 
-export function hellPage(content, forSearch){
-    let mainContent = sideMenu('create',content,null,null,forSearch);
-    mainContent?.append(`<h2 class="header has-text-caution">${loc('wiki_hell')}</h2>`);
+export function hellPage(content){
+    let mainContent = sideMenu('create',content);
+    mainContent.append(`<h2 class="header has-text-caution">${loc('wiki_hell')}</h2>`);
 
     infoBoxBuilder(mainContent,{ name: 'threat', template: 'hell', paragraphs: 3,
         para_data: { 1: ['10,000'], 2: ['1000-1250'] },
         data_color: { 1: ['caution'], 2: ['warning'] }
-    }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'threat',loc('wiki_hell_threat'), forSearch);
+    });
+    sideMenu('add',`hell-gameplay`,'threat',loc('wiki_hell_threat'));
 
     infoBoxBuilder(mainContent,{ name: 'siege', template: 'hell', paragraphs: 5,
         para_data: { 3: ['5k+'] },
-        data_color: { 3: ['caution'] } }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'siege',loc('wiki_hell_siege'), forSearch);
+        data_color: { 3: ['caution'] } });
+    sideMenu('add',`hell-gameplay`,'siege',loc('wiki_hell_siege'));
 
-    infoBoxBuilder(mainContent,{ name: 'strategy', template: 'hell', paragraphs: 3 }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'strategy',loc('wiki_hell_strategy'), forSearch);
+    infoBoxBuilder(mainContent,{ name: 'strategy', template: 'hell', paragraphs: 3 });
+    sideMenu('add',`hell-gameplay`,'strategy',loc('wiki_hell_strategy'));
 
     let soul = infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', paragraphs: 4,
         para_data: {
             1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
             3: [loc('tech_demon_attractor')]
         }
-    }, null, forSearch);
+    });
     let soul_extra = $(`<div></div>`);
-    soul.append?.(soul_extra);
+    soul.append(soul_extra);
     //soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_hell_sim2`)}</a>`,'Zarakon'])}</div>`);
-    sideMenu('add',`hell-gameplay`,'soul_gem',loc('wiki_hell_soul_gem'), forSearch);
+    sideMenu('add',`hell-gameplay`,'soul_gem',loc('wiki_hell_soul_gem'));
 
-    infoBoxBuilder(mainContent,{ name: 'infernite', template: 'hell', paragraphs: 4 }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'infernite',loc('wiki_hell_infernite'), forSearch);
+    infoBoxBuilder(mainContent,{ name: 'infernite', template: 'hell', paragraphs: 4 });
+    sideMenu('add',`hell-gameplay`,'infernite',loc('wiki_hell_infernite'));
 
-    mainContent?.append(`<h2 class="header has-text-caution">${loc('wiki_hell_deep')}</h2>`);
+    mainContent.append(`<h2 class="header has-text-caution">${loc('wiki_hell_deep')}</h2>`);
 
     infoBoxBuilder(mainContent,{ name: 'pit', template: 'hell', paragraphs: 3,
         para_data: {
@@ -46,8 +46,8 @@ export function hellPage(content, forSearch){
             1: [false,'wiki.html#intergalactic-structures-telemetry_beacon'],
             2: ['wiki.html#hell-structures-soul_forge']
         }
-    }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'pit',loc('wiki_hell_pit'), forSearch);
+    });
+    sideMenu('add',`hell-gameplay`,'pit',loc('wiki_hell_pit'));
 
     infoBoxBuilder(mainContent,{ name: 'corrupted', template: 'hell', paragraphs: 3,
         para_data: {
@@ -58,8 +58,8 @@ export function hellPage(content, forSearch){
         data_link: {
             1: ['wiki.html#intergalactic-tech-metaphysics']
         }
-    }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'corrupted',loc('wiki_hell_corrupted'), forSearch);
+    });
+    sideMenu('add',`hell-gameplay`,'corrupted',loc('wiki_hell_corrupted'));
 
     let harmonic = calcPillar();
     infoBoxBuilder(mainContent,{ name: 'pillar', template: 'hell', paragraphs: 6, break: [4,5,6],
@@ -74,10 +74,10 @@ export function hellPage(content, forSearch){
         data_link: {
             5: ['wiki.html#hell-structures-west_tower']
         }
-    }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'pillar',loc('wiki_hell_pillar'), forSearch);
+    });
+    sideMenu('add',`hell-gameplay`,'pillar',loc('wiki_hell_pillar'));
 
-    mainContent?.append(`<h2 class="header has-text-caution">${loc('portal_spire_name')}</h2>`);
+    mainContent.append(`<h2 class="header has-text-caution">${loc('portal_spire_name')}</h2>`);
 
     infoBoxBuilder(mainContent,{ name: 'spire', template: 'hell', paragraphs: 5, break: [4],
         para_data: {
@@ -87,15 +87,15 @@ export function hellPage(content, forSearch){
         data_link: {
             5: ['wiki.html#resets-prestige-infusion']
         }
-    }, null, forSearch);
-    sideMenu('add',`hell-gameplay`,'spire',loc('portal_spire_name'), forSearch);
+    });
+    sideMenu('add',`hell-gameplay`,'spire',loc('portal_spire_name'));
 
     { // Spire Mech
         let mechs = infoBoxBuilder(mainContent,{ name: 'mech', template: 'hell', paragraphs: 2,
             para_data: {
                 2: [5,loc('portal_mech_size_small'),loc('portal_mech_size_medium'),loc('portal_mech_size_large'),loc('portal_mech_size_titan'),loc('portal_mech_size_collector')]
             }
-        }, null, forSearch);
+        });
 
         let s_cost = mechCost('small');
         infoBoxBuilder(mechs,{ name: 'scout', template: 'hell', paragraphs: 10, break: [3,4,5,6,10], h_level: 4, header: true,
@@ -113,7 +113,7 @@ export function hellPage(content, forSearch){
             data_link: {
                 2: [false,false,'wiki.html#blood-prestige-prepared']
             }
-        }, null, forSearch);
+        });
 
         let m_cost = mechCost('medium');
         infoBoxBuilder(mechs,{ name: 'standard', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
@@ -128,7 +128,7 @@ export function hellPage(content, forSearch){
             data_link: {
                 2: [false,false,false,'wiki.html#blood-prestige-prepared']
             }
-        }, null, forSearch);
+        });
 
         let l_cost = mechCost('large');
         infoBoxBuilder(mechs,{ name: 'heavy', template: 'hell', paragraphs: 6, break: [3,4,5,6], h_level: 4, header: true,
@@ -142,7 +142,7 @@ export function hellPage(content, forSearch){
             data_link: {
                 2: [false,false,false,'wiki.html#blood-prestige-prepared']
             }
-        }, null, forSearch);
+        });
 
         let t_cost = mechCost('titan');
         infoBoxBuilder(mechs,{ name: 'titan', template: 'hell', paragraphs: 7, break: [3,4,5,6,7], h_level: 4, header: true,
@@ -157,7 +157,7 @@ export function hellPage(content, forSearch){
             data_link: {
                 2: [false,false,false,'wiki.html#blood-prestige-prepared']
             }
-        }, null, forSearch);
+        });
 
         let c_cost = mechCost('collector');
         infoBoxBuilder(mechs,{ name: 'collector', template: 'hell', paragraphs: 5, break: [3,4,5], h_level: 4, header: true,
@@ -170,9 +170,9 @@ export function hellPage(content, forSearch){
             data_link: {
                 2: [false,false,'wiki.html#blood-prestige-prepared']
             }
-        }, null, forSearch);
+        });
 
-        sideMenu('add',`hell-gameplay`,'mech',loc('wiki_hell_mech'), forSearch);
+        sideMenu('add',`hell-gameplay`,'mech',loc('wiki_hell_mech'));
     }
 
     { // Mech Chassis
@@ -188,20 +188,14 @@ export function hellPage(content, forSearch){
                 1: typeList,
                 2: [terrains.length]
             }
-        }, null, forSearch);
+        });
 
         terrains.forEach(function(t){
             let ratings = {};
             for (let i=1; i<=types.length; i++){
                 let raws = +(terrainEffect({ chassis: types[i-1], size: 'small' },t) * 100).toFixed(1);
                 let rawl = +(terrainEffect({ chassis: types[i-1], size: 'large' },t) * 100).toFixed(1);
-                ratings[i+1] = `${loc('wiki_hell_effectiveness',forSearch?[
-                    loc(`portal_mech_chassis_${types[i-1]}`),
-                    raws,
-                    rawl,
-                    'S',
-                    'L'
-                ]:[
+                ratings[i+1] = `${loc('wiki_hell_effectiveness',[
                     `<span class="has-text-warning">${loc(`portal_mech_chassis_${types[i-1]}`)}</span>`,
                     `<span class="has-text-${raws >= 100 ? 'success' : 'danger'}">${raws}%</span>`,
                     `<span class="has-text-${rawl >= 100 ? 'success' : 'danger'}">${rawl}%</span>`,
@@ -214,10 +208,10 @@ export function hellPage(content, forSearch){
                 text: { 1: `portal_spire_type_${t}_desc` },
                 rawtext: ratings,
                 pclass: 'col2 sk1'
-            }, null, forSearch);
+            });
         });
 
-        sideMenu('add',`hell-gameplay`,'chassis',loc('wiki_hell_chassis'), forSearch);
+        sideMenu('add',`hell-gameplay`,'chassis',loc('wiki_hell_chassis'));
     }
 
     { // Monsters
@@ -227,13 +221,13 @@ export function hellPage(content, forSearch){
             para_data: {
                 2: [weapons.length]
             }
-        }, null, forSearch);
+        });
 
         Object.keys(monsters).forEach(function(mob){
             let ratings = {};
             for (let i=1; i<=weapons.length; i++){
                 let wep = +((monsters[mob].weapon.hasOwnProperty(weapons[i-1]) ? monsters[mob].weapon[weapons[i-1]] : 1) * 100).toFixed(0);
-                ratings[i] = `${loc('wiki_hell_weapon_effect',forSearch?[loc(`portal_mech_weapon_${weapons[i-1]}`), wep]:[
+                ratings[i] = `${loc('wiki_hell_weapon_effect',[
                     `<span class="has-text-warning">${loc(`portal_mech_weapon_${weapons[i-1]}`)}</span>`,
                     `<span class="has-text-${wep >= 90 ? 'success' : 'danger'}">${wep}%</span>`
                 ])}`;
@@ -242,10 +236,10 @@ export function hellPage(content, forSearch){
             infoBoxBuilder(mobs,{ name: `boss_${mob}`, template: 'hell', label: loc(`portal_mech_boss_${mob}`), paragraphs: 8, break: [2,3,4,5,6,7,8], h_level: 4, header: true,
                 rawtext: ratings,
                 pclass: 'col2'
-            }, null, forSearch);
+            });
         });
 
-        sideMenu('add',`hell-gameplay`,'monsters',loc('wiki_hell_monsters'), forSearch);
+        sideMenu('add',`hell-gameplay`,'monsters',loc('wiki_hell_monsters'));
     }
 
     { // Hazards
@@ -258,7 +252,7 @@ export function hellPage(content, forSearch){
                 7: [`-1`],
                 8: [loc('portal_spire_status_freeze'),loc('portal_spire_status_hot'),loc('portal_spire_status_rain'),loc('portal_spire_status_hail')],
             }
-        }, null, forSearch);
+        });
 
         let counter_text = {
             1: 'wiki_hell_hazard_effect',
@@ -271,7 +265,7 @@ export function hellPage(content, forSearch){
                 1: [`75%`],
                 2: [loc(`portal_mech_equip_radiator`)]
             }
-        }, null, forSearch);
+        });
         
         infoBoxBuilder(hazard,{ name: 'h_hot', template: 'hell', label: loc(`portal_spire_status_hot`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -279,7 +273,7 @@ export function hellPage(content, forSearch){
                 1: [`75%`],
                 2: [loc(`portal_mech_equip_coolant`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_corrosive', template: 'hell', label: loc(`portal_spire_status_corrosive`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
@@ -292,7 +286,7 @@ export function hellPage(content, forSearch){
                 2: [loc(`portal_mech_equip_ablative`)],
                 3: [loc(`portal_mech_equip_shields`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_humid', template: 'hell', label: loc(`portal_spire_status_humid`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -300,7 +294,7 @@ export function hellPage(content, forSearch){
                 1: [`25%`],
                 2: [loc(`portal_mech_equip_seals`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_windy', template: 'hell', label: loc(`portal_spire_status_windy`), paragraphs: 1, h_level: 4, header: true,
             text: {
@@ -309,7 +303,7 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [`50%`,loc(`portal_mech_chassis_hover`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_hilly', template: 'hell', label: loc(`portal_spire_status_hilly`), paragraphs: 1, h_level: 4, header: true,
             text: {
@@ -318,7 +312,7 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [`25%`,loc(`portal_mech_chassis_spider`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_mountain', template: 'hell', label: loc(`portal_spire_status_mountain`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: {
@@ -329,7 +323,7 @@ export function hellPage(content, forSearch){
                 1: [`50%`,loc(`portal_mech_chassis_spider`),loc(`portal_mech_equip_grapple`)],
                 2: [loc(`portal_mech_equip_flare`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_radioactive', template: 'hell', label: loc(`portal_spire_status_radioactive`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -337,7 +331,7 @@ export function hellPage(content, forSearch){
                 1: [`50%`],
                 2: [loc(`portal_mech_equip_shields`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_quake', template: 'hell', label: loc(`portal_spire_status_quake`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -345,7 +339,7 @@ export function hellPage(content, forSearch){
                 1: [`75%`],
                 2: [loc(`portal_mech_equip_stabilizer`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_dust', template: 'hell', label: loc(`portal_spire_status_dust`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -353,7 +347,7 @@ export function hellPage(content, forSearch){
                 1: [`50%`],
                 2: [loc(`portal_mech_equip_seals`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_river', template: 'hell', label: loc(`portal_spire_status_river`), paragraphs: 1, h_level: 4, header: true,
             text: {
@@ -362,7 +356,7 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [`35%`,loc(`portal_mech_chassis_hover`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_tar', template: 'hell', label: loc(`portal_spire_status_tar`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: {
@@ -373,7 +367,7 @@ export function hellPage(content, forSearch){
                 1: [`25%`,loc(`portal_mech_chassis_quad`)],
                 2: [`50%`,loc(`portal_mech_chassis_tread`),loc(`portal_mech_chassis_wheel`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_steam', template: 'hell', label: loc(`portal_spire_status_steam`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -381,7 +375,7 @@ export function hellPage(content, forSearch){
                 1: [`25%`],
                 2: [loc(`portal_mech_equip_shields`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_flooded', template: 'hell', label: loc(`portal_spire_status_flooded`), paragraphs: 1, h_level: 4, header: true,
             text: {
@@ -390,7 +384,7 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [`65%`,loc(`portal_mech_chassis_hover`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_fog', template: 'hell', label: loc(`portal_spire_status_fog`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -398,7 +392,7 @@ export function hellPage(content, forSearch){
                 1: [`80%`],
                 2: [loc(`portal_mech_equip_sonar`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_rain', template: 'hell', label: loc(`portal_spire_status_rain`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -406,7 +400,7 @@ export function hellPage(content, forSearch){
                 1: [`25%`],
                 2: [loc(`portal_mech_equip_seals`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_hail', template: 'hell', label: loc(`portal_spire_status_hail`), paragraphs: 1, h_level: 4, header: true,
             text: {
@@ -415,7 +409,7 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [`25%`,loc(`portal_mech_equip_ablative`),loc(`portal_mech_equip_shields`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_chasm', template: 'hell', label: loc(`portal_spire_status_chasm`), paragraphs: 2, break: [2], h_level: 4, header: true,
             text: counter_text,    
@@ -423,7 +417,7 @@ export function hellPage(content, forSearch){
                 1: [`90%`],
                 2: [loc(`portal_mech_equip_grapple`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_dark', template: 'hell', label: loc(`portal_spire_status_dark`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
@@ -436,7 +430,7 @@ export function hellPage(content, forSearch){
                 2: [loc(`portal_mech_equip_infrared`)],
                 3: [loc(`portal_mech_equip_flare`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(hazard,{ name: 'h_gravity', template: 'hell', label: loc(`portal_spire_status_gravity`), paragraphs: 3, break: [2,3], h_level: 4, header: true,
             text: {
@@ -449,9 +443,9 @@ export function hellPage(content, forSearch){
                 2: [loc(`portal_mech_size_large`),`55%`],
                 3: [loc(`portal_mech_size_titan`),`75%`]
             }
-        }, null, forSearch);
+        });
 
-        sideMenu('add',`hell-gameplay`,'hazard',loc('wiki_hell_hazard'), forSearch);
+        sideMenu('add',`hell-gameplay`,'hazard',loc('wiki_hell_hazard'));
     }
 
     { // Special Equipment
@@ -459,8 +453,8 @@ export function hellPage(content, forSearch){
             para_data: {
                 1: [loc(`portal_mech_equip_jumpjet`),loc(`portal_mech_equip_battery`),loc(`portal_mech_equip_target`)]
             }
-        }, null, forSearch);
-        sideMenu('add',`hell-gameplay`,'equipment',loc('wiki_hell_equipment'), forSearch);
+        });
+        sideMenu('add',`hell-gameplay`,'equipment',loc('wiki_hell_equipment'));
 
         infoBoxBuilder(special,{ name: `eq_jump`, template: 'hell', label: loc(`portal_mech_equip_jumpjet`), paragraphs: 4, break: [4], h_level: 3, header: true,
             para_data: {
@@ -468,20 +462,20 @@ export function hellPage(content, forSearch){
                 2: [`20%`],
                 3: [`10%`,loc(`portal_spire_status_gravity`)]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(special,{ name: `eq_battery`, template: 'hell', label: loc(`portal_mech_equip_battery`), paragraphs: 2, h_level: 3, header: true,
             para_data: {
                 1: [loc(`portal_mech_equip_battery`),loc(`wiki_hell_heavy`)],
                 2: [`2%`]
             }
-        }, null, forSearch);
+        });
 
         infoBoxBuilder(special,{ name: `eq_target`, template: 'hell', label: loc(`portal_mech_equip_target`), paragraphs: 3, h_level: 3, header: true,
             para_data: {
                 1: [loc(`portal_mech_equip_target`),loc(`wiki_hell_titan`)],
                 2: [`25%`]
             }
-        }, null, forSearch);
+        });
     }
 }
