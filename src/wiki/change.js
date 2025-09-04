@@ -3,6 +3,66 @@ import { clearElement } from './../functions.js';
 
 export const changeList = [
     {
+        version: `1.4.8`,
+        date: `5/16/2025`,
+        changes: [
+            `Psychic now works with Elysanite.`,
+            `Parasite Assembly now works on a delay timer rather then a wind restriction.`,
+            `Fixed bugs with trait mutation costs.`
+        ]
+    },
+    {
+        version: `1.4.7`,
+        date: `5/15/2025`,
+        changes: [
+            `Pit Miners now produce Chrysotile outside of Isolation.`,
+            `Fixed issue with "Hybrid" and Enlightenment.`,
+            `Fixed some problems with entering Isolation and ending Quarantine.`,
+            `Fixed some broken wiki trait displays.`
+        ]
+    },
+    {
+        version: `1.4.6`,
+        date: `5/13/2025`,
+        changes: [
+            `Added Catnip and Anise traits to Ent/Pinguicula.`,
+            `Fixed issue with saving trait ranks to custom export.`,
+            `Performance Optimizations.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        revision: `b`,
+        date: `5/12/2025`,
+        changes: [
+            `Fixed issues with loading custom race data into custom lab.`,
+            `Crates now correctly cost Bones instead of Boneweave with Iron Wood trait.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        revision: `a`,
+        date: `5/12/2025`,
+        changes: [
+            `Parasite now scales with rank.`,
+            `Synthetic parasites can now only assemble new citizens when it's windy.`
+        ]
+    },
+    {
+        version: `1.4.5`,
+        date: `5/11/2025`,
+        changes: [
+            `New Custom/Hybrid Lab mechanics.`,
+            `Added New Theme GrubBox (RedGreen CB) for Red/Green color blind players.`,
+            `Technophobe perk race complexity changed to flat gene point bonus.`,
+            `Overtapped has been removed, Negative traits instead pay a complexity tax.`,
+            `Enviromentalist now scales with trait rank.`,
+            `Thalassophobia replaced with Unfavored.`,
+            `Optimistic cost lowered from 5 points to 3.`,
+            `Fixed bug that could cause archfiends to queue with extra weapons.`
+        ]
+    },
+    {
         version: `1.4.4`,
         date: `5/7/2025`,
         changes: [
