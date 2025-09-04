@@ -1424,6 +1424,13 @@ export function marketItem(mount,market_item,name,color,full){
                 if (global.race['persuasive']){
                     rate *= 1 + (global.race['persuasive'] / 100);
                 }
+                if (astroSign === 'capricorn'){
+                    rate *= 1 + (astroVal('capricorn')[0] / 100);
+                }
+                if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.c){
+                    let trade = 70 * (traits.ocular_power.vars()[1] / 100);
+                    rate *= 1 + (trade / 100);
+                }
                 if (global.race['devious']){
                     rate *= 1 - (traits.devious.vars()[0] / 100);
                 }
@@ -2382,7 +2389,8 @@ function tradeRouteColor(res){
 
 function buildCrateLabel(){
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10
+    if (global.race['iron_wood']){ material = global.resource.Lumber.name; }
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
 
@@ -2404,7 +2412,8 @@ export function crateGovHook(type,num){
 function buildCrate(num){
     let keyMutipler = num || keyMultiplier();
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
-    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
+    if (global.race['iron_wood']){ material = 'Lumber'; }
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
         keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
     }

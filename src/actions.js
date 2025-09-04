@@ -1,8 +1,8 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill } from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank } from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter } from './industry.js';
@@ -884,7 +884,7 @@ export const actions = {
                     let allowed = [];
 
                     let type = 'humanoid';
-                    for (let genus in genus_traits){
+                    for (let genus in genus_def){
                         if (global.tech[`evo_${genus}`] && global.tech[`evo_${genus}`] >= 2){
                             type = genus;
                             break;
@@ -1859,7 +1859,7 @@ export const actions = {
                 Iron(offset){ return costMultiplier('mill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('mill', offset, 125, 1.33); },
             },
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { agriculture: 6 },
             effect(){
                 if (global.tech['agriculture'] >= 6){
@@ -1899,7 +1899,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return powerModifier(global.race['environmentalist'] ? -1.5 : -1); },
+            powered(){ return powerModifier(global.race['environmentalist'] ? -(traits.environmentalist.vars()[1]) : -1); },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
@@ -3193,7 +3193,7 @@ export const actions = {
             category: 'trade',
             era: 'industrialized',
             reqs: { wharf: 1 },
-            not_trait: ['thalassophobia','cataclysm'],
+            not_trait: ['thalassophobia','cataclysm','warlord'],
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
@@ -4021,10 +4021,11 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
-            powered(){
-                let power = global.race['environmentalist']
-                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4
-                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+            powered(wiki){
+                let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                if (!wiki && global.race['environmentalist']){
+                    power -= traits.environmentalist.vars()[0];
+                }
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
@@ -4078,23 +4079,21 @@ export const actions = {
                 let power = -($(this)[0].powered());
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
-            powered(){
+            powered(wiki){
                 let power = 0;
-                if (global.race['environmentalist']){
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        let base = global.city.calendar.wind === 1 ? -7 : -5;
-                        power = global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1);
-                    }
-                    else {
-                        power = global.city.calendar.wind === 1 ? -7 : -5;
-                    }
+                if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
+                    power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
                 }
                 else {
-                    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
+                    power = -6;
+                }
+                if (!wiki && global.race['environmentalist']){
+                    power -= traits.environmentalist.vars()[0];
+                    if (global.city.calendar.wind === 1){
+                        power -= 1;
                     }
                     else {
-                        power = -6;
+                        power += 1;
                     }
                 }
                 let dirt = govActive('dirty_jobs',1);
@@ -4672,15 +4671,59 @@ export function buildTemplate(key, region){
                     if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
                         warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
                     }
+                    else if (global.race['parasite']){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
+                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.city.calendar.day])}</div>`;
+                        }
+                        else {
+                            warn = `<div class="has-text-success">${loc('city_assembly_effect_parasite_ok')}</div>`;
+                        }
+                    }
                     return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
                 },
                 action(args){
+                    if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
+                        let buffer = 6;
+                        switch (traitRank('parasite')){
+                            case 0.25:
+                                buffer = 5;
+                                break;
+                            case 0.5:   
+                                buffer = 4;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                buffer = 4 - traitRank('parasite');
+                                break;
+                        }
+                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.city.calendar.day){
+                            return false;
+                        }
+                    }
                     if (global.race['vax'] && global.race.vax >= 100){
                         return true;
                     }
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
                         global.civic[global.civic.d_job].workers++;
+                        global.race['last_assembled'] = global.city.calendar.day;
                         return true;
                     }
                     return false;
@@ -5114,7 +5157,12 @@ const raceList = [
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
-    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ) {
+    if (!['custom','hybrid'].includes(race) || (race === 'custom' && global.custom.hasOwnProperty('race0')) || (race === 'hybrid' && global.custom.hasOwnProperty('race1')) ){
+        if (race === 'hybrid' && global.custom.race1.genus !== 'hybrid'){
+            global.custom.race1.hybrid = [global.custom.race1.genus, global.custom.race1.genus === 'humanoid' ? 'small' : 'humanoid'];
+            global.custom.race1.genus = 'hybrid';
+        }
+        else if (race === 'custom' && global.custom.race0.genus === 'hybrid'){ global.custom.race0.genus = 'humanoid'; }
         actions.evolution[race] = {
             id: `evolution-${race}`,
             title(){ return races[race].name; },
@@ -5961,6 +6009,7 @@ export function gainTech(action){
     renderEdenic();
 }
 
+export var cLabels = global.settings['cLabels'];
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
@@ -6024,6 +6073,8 @@ export function drawCity(){
             });
         }
     });
+
+    cLabels = global.settings['cLabels'];
 }
 
 export function drawTech(){
@@ -6339,9 +6390,7 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(true);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [true]);
                 }
             },
             power_off(){
@@ -6355,9 +6404,7 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
-                        c_action.postPower(false);
-                    }, 250);
+                    callback_queue.set([c_action, 'postPower'], [false]);
                 }
             },
             repair(){
@@ -6456,9 +6503,7 @@ function runAction(c_action,action,type){
                 if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action({isQueue: false})){
                     gainTech(type);
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 else {
@@ -6490,9 +6535,7 @@ function runAction(c_action,action,type){
                         gainBlood(type);
                     }
                     if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
+                        callback_queue.set([c_action, 'post'], []);
                     }
                 }
                 break;
@@ -6612,9 +6655,7 @@ export function postBuild(c_action,action,type){
         }
     }
     if (c_action['post']){
-        setTimeout(function(){
-            c_action.post();
-        }, 250);
+        callback_queue.set([c_action, 'post'], []);
     }
     updateDesc(c_action,action,type);
 }
@@ -6959,7 +7000,7 @@ function buildPlanet(aspect,opt,args){
 }
 
 // Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
-export function powerOnNewStruct(c_action,extra){
+export function powerOnNewStruct(c_action){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
         return false;
@@ -6995,8 +7036,8 @@ export function powerOnNewStruct(c_action,extra){
                 gov_tasks.replicate.task();
             }
         }
-        if (extra && typeof extra === 'function'){
-            return extra(c_action);
+        if (c_action['postPower']){
+            callback_queue.set([c_action, 'postPower'], [true]);
         }
         return true;
     }
@@ -8361,17 +8402,17 @@ function sentience(){
     else {
         let typeList = global.stats.achieve['godslayer'] && races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
         typeList.forEach(function(type){
-            Object.keys(genus_traits[type]).forEach(function (trait) {
+            Object.keys(genus_def[type].traits).forEach(function (trait) {
                 let mainspec = global.tech[`evo_${type}`] >= 2 ? true : false;
                 if (mainspec){
                     global.race['maintype'] = type;
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
                         setTraitRank(trait);
                     }
                 }
                 else {
-                    setTraitRank(trait,{ set: genus_traits[type][trait] });
+                    setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     setTraitRank(trait, {down:true});
                 }
             });
@@ -8574,18 +8615,9 @@ function sentience(){
             dwarf: global.custom.race0.dwarf,
             genes: 0,
             genus: global.custom.race0.genus,
-            traitlist: global.custom.race0.traits
+            traitlist: global.custom.race0.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race0.traits.length; i++){
-            if (traits[global.custom.race0.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
@@ -8602,18 +8634,9 @@ function sentience(){
             genes: 0,
             genus: global.custom.race1.genus,
             hybrid: global.custom.race1.hybrid,
-            traitlist: global.custom.race1.traits
+            traitlist: global.custom.race1.traits,
+            ranks: global.custom.race0?.ranks || {} 
         });
-
-        let neg_traits = 0;
-        for (let i=0; i<global.custom.race1.traits.length; i++){
-            if (traits[global.custom.race1.traits[i]].val < 0){
-                neg_traits++;
-            }
-        }
-        if (neg_traits > 10){
-            global.race['overtapped'] = (neg_traits - 10) * 2;
-        }
     }
 
     if (global.race.unfathomable){
@@ -9523,7 +9546,6 @@ function fanaticTrait(trait,rank){
     if (global.race[trait]){
         if (!setTraitRank(trait)){
             randomMinorTrait(5);
-            arpa('Genetics');
         }
         else if (trait === 'imitation'){
             setImitation(true);
@@ -9541,6 +9563,7 @@ function fanaticTrait(trait,rank){
         }
         cleanAddTrait(trait);
     }
+    arpa('Genetics');
 }
 
 export function resQueue(){
@@ -9714,4 +9737,20 @@ export function start_cataclysm(){
         delete global.race['start_cataclysm'];
         sentience();
     }
+}
+
+var callback_repeat = new Map();
+export function doCallbacks(){
+    for (const [[c_action, func], args] of callback_queue){
+        // If the function returns true, then it wants to be called again in the future
+        if (c_action[func](...args)){
+            callback_repeat.set([c_action, func], args);
+        }
+    }
+    // Remove all registered callbacks, then reinsert any callbacks that want to be repeated
+    callback_queue.clear();
+    for (const [[c_action, func], args] of callback_repeat){
+        callback_queue.set([c_action, func], args);
+    }
+    callback_repeat.clear();
 }
